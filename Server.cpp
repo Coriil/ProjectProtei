@@ -58,7 +58,7 @@ Server::Server(int opNumber, int queueSize)
  }
 
 using tcp = boost::asio::ip::tcp;
-namespace http = boost::beast::http;
+namespace http = boost::beast::http;//ДОЛЖНО БЫТЬ В НАЧАЛЕ ФАЙЛА ИЛИ В ФУНКЦИИИ В НАЧАЛЕ А НЕ В СЕРЕДИНЕ
 
 
 double Server::createID(long phoneNumber)
@@ -76,7 +76,7 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
     response.result(http::status::ok);
     response.set(http::field::server, "My HTTP Server");
     response.set(http::field::content_type, "text/plain");
-    response.body() = std::to_string(createID(num));
+    response.body() = std::to_string(createID(num));//DOUBLE ХОТЯ iNT
     response.prepare_payload();
 
     // Send the response to the client
@@ -113,8 +113,10 @@ void Server::runServer() {
                // Например, если номер находится в строке "number=12345678901", то можно извлечь его так:
                std::string numberString = requestBody.substr(requestBody.find("number=") + strlen("number="));
                // Преобразуем строку в число
-               double number = std::stoll(numberString);
+               double number = std::stoll(numberString);//DOUBLE ХОТЯ iNT СДЕЛАТЬ ПРОВЕРКУ stoll
                serverWorker->checkQueue(number);
+               //ПРОВЕРКА ВОЗВРАТА СДЕЛАТЬ ЗАПРОС НАЗАД ЧТО НЕ ДОБАВИЛИИ
+
 
                handleRequest(request, socket, number);
 

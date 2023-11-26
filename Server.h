@@ -8,20 +8,27 @@
 #include <queue>
 #include <mutex>
 
+
+//ПОПРАВИТЬ ПАБЛИК ПРАЙВАТ
+//ВЫНЕСТИ СЕРВЕР ВОРКЕР В ОТДЕЛЬНЫЙ КЛАСС
+//Воркер описание зачем он нужен
+
+//ДОБАВИТЬ ДЕСТРКУТОРЫ НА ВСЕ NEW ТРЕД НАДО ВРОДЕ ПРЕДВАРИТЕЛЬНО ОСТАНОВиТЬ
+
 class ServerWorker: public QObject
 {
     Q_OBJECT
 public:
     QTimer* workerTimer;
 
-    ServerWorker(int opNumber, int queueSize);
+    ServerWorker(int opNumber, int queueSize);//Это говно, передавать весь конфиг нужно
     std::queue<int> queue;
     const size_t queueMaxSize;
     const size_t opNumber;
     std::vector<CallProcessing> operators;
 
 
-    void checkQueue(int number);
+    void checkQueue(int number); //У СHeck cqueue  и operatorsAssign общие данные - надо добавить мьютекс
 public slots:
      void operatorsAssign();
      void startWorker();
@@ -44,13 +51,13 @@ public:
 
 
 signals:
-    void assignOp();
+    void assignOp();//Вообще используется
 
 public slots:
     void runServer();
 
 private:
-    QThread* checkQueryThread;
+    QThread* checkQueryThread;//описание
 
 };
 
