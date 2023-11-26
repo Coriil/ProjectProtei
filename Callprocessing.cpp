@@ -2,7 +2,7 @@
 
 CallProcessing::CallProcessing()
 {
-    m_timer = new QTimer(0);
+    m_timer = new QTimer(this);
     m_timer->setSingleShot(true);
     connect(m_timer, &QTimer::timeout, this, &CallProcessing::releaseOp);//, Qt::DirectConnection);
     connect(this, &CallProcessing::computeData, this, &CallProcessing::assignOp);

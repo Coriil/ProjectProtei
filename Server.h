@@ -8,14 +8,37 @@
 #include <queue>
 #include <mutex>
 
+class ServerWorker: public QObject
+{
+    Q_OBJECT
+public:
+    QTimer* workerTimer;
+
+    ServerWorker(int opNumber, int queueSize);
+    std::queue<int> queue;
+    const size_t queueMaxSize;
+    const size_t opNumber;
+    std::vector<CallProcessing> operators;
+
+
+    void checkQueue(int number);
+public slots:
+     void operatorsAssign();
+     void startWorker();
+
+
+};
 
 class Server: public QObject
 {
+    Q_OBJECT
 public:
+    ServerWorker* serverWorker;
+    QTimer* workerTimer;
 
     explicit Server(int opNumber, int queueSize);
     bool isRunning = false;
-    Q_OBJECT
+
     double createID(long phoneNumber);
     void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);
 
@@ -25,15 +48,12 @@ signals:
 
 public slots:
     void runServer();
-private:
-    std::vector<CallProcessing> operators;
-    std::queue<int> queue;
-    const size_t queueMaxSize;
-    std::mutex mutex;  // Мьютекс для защиты очереди и вектора операторов
 
-    void operatorsAssign();
-    void checkQueue(int number);
+private:
+    QThread* checkQueryThread;
 
 };
+
+
 
 #endif // SERVER_H

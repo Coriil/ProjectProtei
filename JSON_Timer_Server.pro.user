@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.2, 2023-11-26T17:14:47. -->
+<!-- Written by QtCreator 6.0.2, 2023-11-26T21:53:48. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -236,8 +236,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/polina/progs/Server_queue6/Server_queue/JSON_Timer_Server.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/polina/progs/Server_queue6/Server_queue/JSON_Timer_Server.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">JSON_Timer_Server2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/polina/gitRepos/JSON_Timer_Server.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/polina/gitRepos/JSON_Timer_Server.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>

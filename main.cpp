@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
 
     //vector<CallProcessing> callingOperators = vector<CallProcessing>(conf.getOpNumber());
     Server *srv = new Server(conf.getOpNumber(), conf.getQueueSize());
+    srv->runServer();
+
 
     QThread *thread1=new QThread();
     srv->moveToThread(thread1);
@@ -30,6 +32,8 @@ int main(int argc, char *argv[])
     catch (const std::exception& e) {
             std::cerr << "Exception: " << e.what() << std::endl;
     }
+
+
     return a.exec();
 }
 
