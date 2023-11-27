@@ -23,12 +23,13 @@ private:
     QThread* checkQueryThread;//описание
     Q_OBJECT
 public:
+
+    explicit Server(ConfigJson cfg);
+    ~Server();
     ServerWorker* serverWorker;//
     QTimer* workerTimer;
 
-    explicit Server(ConfigJson cfg);
     bool isRunning = false;
-
     long createID(long phoneNumber);
     void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);
 

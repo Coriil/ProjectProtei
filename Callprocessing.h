@@ -18,11 +18,13 @@ class CallProcessing : public QObject
 
 public:
      bool m_isBusy;
-    //std::vector<CallProcessing> allOp;
-    CallProcessing(ConfigJson cfg);
-    ~CallProcessing();
+
+     explicit CallProcessing();
+     ~CallProcessing();
 
     void setNumber(int i){m_timerNumber=i;};
+    void setBusyOpTimeMin(int a){m_BusyOpTimeMin=a;};
+    void setBusyOpTimeMax(int b){m_BusyOpTimeMax=b;};
 
     int initAvailableOp(int opNumber);
 

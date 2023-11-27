@@ -4,37 +4,43 @@
 Server::Server(ConfigJson cfg)
 {
      isRunning=true;
-     checkQueryThread = new QThread();
-     serverWorker = new ServerWorker(cfg);
-     serverWorker->moveToThread(checkQueryThread);
+     checkQueryThread = new QThread(); //создается новый поток для обработки очереди
+     serverWorker = new ServerWorker(cfg);//класс ServerWorker для обработки очереди заявок
+     serverWorker->moveToThread(checkQueryThread);//работа с очередью происходит в новом потоке, отдельном от потока приёма заявок
      connect(checkQueryThread, &QThread::started, serverWorker, &ServerWorker::startWorker);
      checkQueryThread->start();
+}
+
+Server::~Server()
+{
+    delete checkQueryThread;
+    delete serverWorker;
 }
 
 using tcp = boost::asio::ip::tcp;
 namespace http = boost::beast::http;//ДОЛЖНО БЫТЬ В НАЧАЛЕ ФАЙЛА ИЛИ В ФУНКЦИИИ В НАЧАЛЕ А НЕ В СЕРЕДИНЕ
 
-
+//создание идентификатора заявки CallID
 long Server::createID(long phoneNumber)
 {
-    long msecCur = QTime(0, 0, 0).msecsTo(QTime::currentTime());
-    long ID =phoneNumber^msecCur;
+    long msecCur = QTime(0, 0, 0).msecsTo(QTime::currentTime());//время (мсек) с начала дня до момента прихода заявки
+    long ID =phoneNumber^msecCur;//операция XOR для создания ID из номера и времени
     return ID;
 }
 
 
 void Server::handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num) {
     namespace http = boost::beast::http;
-    // Prepare the reАsponse message
+    // подготовка ответа
     http::response<http::string_body> response;
     response.version(request.version());
     response.result(http::status::ok);
     response.set(http::field::server, "My HTTP Server");
-    response.set(http::field::content_type, "text/plain");
-    response.body() = std::to_string(createID(num));
+    //response.set(http::field::content_type, "text/plain");
+    response.body() = std::to_string(createID(num));//в теле ответа содержится CallID
     response.prepare_payload();
 
-    // Send the response to the client
+    // отправка ответа клиенту
     boost::beast::http::write(socket, response);
 }
 
@@ -44,15 +50,13 @@ void Server::runServer() {
     using tcp = boost::asio::ip::tcp;
     namespace http = boost::beast::http;
     boost::asio::io_context io_context;
-       tcp::acceptor acceptor(io_context, {tcp::v4(), 8080});
+    tcp::acceptor acceptor(io_context, {tcp::v4(), 8080});
 
        while (true) {
 
            tcp::socket socket(io_context);
            acceptor.accept(socket);
-           boost::system::error_code ec;
-           //socket.wait(boost::asio::ip::tcp::socket::wait_read, ec);
-            // Read the HTTP request
+           // Read the HTTP request
            boost::beast::flat_buffer buffer;
            http::request<http::string_body> request;
            boost::beast::http::read(socket, buffer, request);

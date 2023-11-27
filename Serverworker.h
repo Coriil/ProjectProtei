@@ -14,11 +14,14 @@ class ServerWorker : public QObject
     Q_OBJECT
 
 public:
-    QTimer* workerTimer;
     explicit ServerWorker(ConfigJson cfg);
+    ~ServerWorker();
+    QTimer* workerTimer;
     std::queue<int> queue;
-    const size_t queueMaxSize;
+    const size_t queueMaxSize;//а нужен ли вообще конст если будет перечтение?
     const size_t opNumber;
+    const int BusyOpTimeMin;
+    const int BusyOpTimeMax;
     std::vector<CallProcessing> operators;
 
     QMutex m_mtx;

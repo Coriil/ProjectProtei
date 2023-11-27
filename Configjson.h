@@ -23,6 +23,7 @@ public:
     ConfigJson();
     ConfigJson(QString filePath);
 
+
     ConfData getCfg(){return cfgData;};
     int getQueueSize(){return cfgData.queueSize;}
     int getOpNumber(){return cfgData.opNumber;}

@@ -15,14 +15,11 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     //ConfigJson conf("//home/anatoly/project");
     ConfigJson conf("/home/polina/config.json");
-
-
-    //vector<CallProcessing> callingOperators = vector<CallProcessing>(conf.getOpNumber());
     Server *srv = new Server(conf);
     srv->runServer();
 
 
-    QThread *thread1=new QThread();
+    QThread *thread1 = new QThread();
     srv->moveToThread(thread1);
     QObject::connect(thread1, SIGNAL(started()), srv, SLOT(runServer()));
     try {

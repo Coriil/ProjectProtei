@@ -38,12 +38,12 @@ int ConfigJson::readConfigJSON(QString filePath)
 
     QJsonObject jsonObject = jsonDoc.object();
 
-    if ((checkValue(jsonObject, "queue size") == 0)&&(jsonObject.value("queue size").toInt(-1)>1))//
+    if ((checkValue(jsonObject, "queue size") == 0)&&(jsonObject.value("queue size").toInt(-1)>1))//минимальный размер очереди равен 1
         cfgData.queueSize = jsonObject.value("queue size").toInt(-1);
     else
         return -1;
 
-    if (checkValue(jsonObject, "operators number") == 0)
+    if ((checkValue(jsonObject, "operators number") == 0)&&(jsonObject.value("operators number").toInt(-1)>1))//минимальное число операторов равно 1
         cfgData.opNumber = jsonObject.value("operators number").toInt(-1);
     else
         return -1;
@@ -68,16 +68,14 @@ int ConfigJson::readConfigJSON(QString filePath)
     else
         return -1;
 
-    if (cfgData.timeOpMin>=cfgData.timeOpMax)//
+    if (cfgData.timeOpMin>cfgData.timeOpMax)//
     {
         return -2;
     }
-
-
     return 0;
 }
 
-//проверка занчений
+//проверка значений из JSON-файла
 int ConfigJson::checkValue(QJsonObject &jsonObject, QString valName)
 {
     if (jsonObject.value(valName) == QJsonValue::Undefined) // проверка что значение существует
@@ -98,6 +96,6 @@ void ConfigJson::setDefaultValues()
     cfgData.opNumber = 5; //число операторов
     cfgData.timeRmin = 100; //минимальное
     cfgData.timeRmax = 1000; // и максимальное время ожидания (секунды)
-    cfgData.timeOpMin = 20; // минимальное
-    cfgData.timeOpMax = 50;// и максимальное время занятости оператора (секунды)
+    cfgData.timeOpMin = 10; // минимальное
+    cfgData.timeOpMax = 30;// и максимальное время занятости оператора (секунды)
 }

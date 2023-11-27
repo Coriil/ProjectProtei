@@ -1,6 +1,11 @@
 #include "Serverworker.h"
 
-ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), opNumber(cfg.getOpNumber())
+ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), opNumber(cfg.getOpNumber()), BusyOpTimeMin(cfg.getOpTimeMin()), BusyOpTimeMax(cfg.getOpTimeMax())
+{
+
+}
+
+ServerWorker::~ServerWorker()
 {
 
 }
@@ -11,12 +16,14 @@ void ServerWorker::startWorker() {
     for (size_t i = 0; i < operators.size(); ++i)
     {
         operators[i].setNumber(i);
+        operators[i].setBusyOpTimeMin(BusyOpTimeMin);
+        operators[i].setBusyOpTimeMax(BusyOpTimeMax);
     }
-
     workerTimer = new QTimer();
     connect(workerTimer, &QTimer::timeout, this, &ServerWorker::operatorsAssign);
     workerTimer->start(1000); // Вызываем функцию каждsые N мс
 }
+
 
 void ServerWorker::operatorsAssign() {
         m_mtx.lock();
