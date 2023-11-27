@@ -26,7 +26,7 @@ public:
 
     QMutex m_mtx;
 
-    void checkQueue(long number); //У СHeck cqueue  и operatorsAssign общие данные - надо добавить мьютекс+
+    bool checkQueue(long number); //У СHeck cqueue  и operatorsAssign общие данные - надо добавить мьютекс+
 
 public slots:
      void operatorsAssign();

@@ -20,8 +20,8 @@ void CallProcessing::assignOp(long number)//эмуляция занятости 
     qDebug() << number;
     srand(time(NULL));
     int randTime = m_BusyOpTimeMin + (rand() % (m_BusyOpTimeMax-m_BusyOpTimeMin));//случайное время занятости оператора
-    m_timer->setInterval(randTime*1000);
-    //m_timer->setInterval(2000);
+    //m_timer->setInterval(randTime*1000);
+    m_timer->setInterval(2000);
     m_timer->start();
     qDebug()<<"timer N"<<m_timerNumber<<"started for" << randTime;
 

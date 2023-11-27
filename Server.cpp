@@ -44,6 +44,22 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
     boost::beast::http::write(socket, response);
 }
 
+void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
+{
+    namespace http = boost::beast::http;
+    // подготовка ответа
+    http::response<http::string_body> response;
+    response.version(request.version());
+    response.result(http::status::ok);
+    response.set(http::field::server, "My HTTP Server");
+    //response.set(http::field::content_type, "text/plain");
+    response.body() = "error: server is overloaded";//в случае перегрузки сервера
+    response.prepare_payload();
+
+    // отправка ответа клиенту
+    boost::beast::http::write(socket, response);
+}
+
 
 
 void Server::runServer() {
@@ -73,11 +89,14 @@ void Server::runServer() {
                std::string numberString = requestBody.substr(requestBody.find("number=") + strlen("number="));
                // Преобразуем строку в число
                long number = std::stoll(numberString);//DOUBLE ХОТЯ iNT СДЕЛАТЬ ПРОВЕРКУ stoll
-               serverWorker->checkQueue(number);
+               if(!(serverWorker->checkQueue(number)))
+               {
                //ПРОВЕРКА ВОЗВРАТА СДЕЛАТЬ ЗАПРОС НАЗАД ЧТО НЕ ДОБАВИЛИИ
-
-
                handleRequest(request, socket, number);
+               }
+               else
+               handleRequestOverload(request, socket);
+
 
 
            }

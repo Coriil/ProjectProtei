@@ -19,10 +19,12 @@ int main(int argc, char *argv[])
     srv->runServer();
 
 
-    QThread *thread1 = new QThread();
+    QThread *thread1 = new QThread();//
+    QObject::connect(thread1, &QThread::finished, thread1, &QThread::deleteLater);//этого достаточно?
     srv->moveToThread(thread1);
     QObject::connect(thread1, SIGNAL(started()), srv, SLOT(runServer()));
-    try {
+    try
+    {
             thread1->start();
     }
     catch (const std::exception& e) {

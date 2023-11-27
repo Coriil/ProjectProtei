@@ -7,11 +7,12 @@ ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), o
 
 ServerWorker::~ServerWorker()
 {
-
+    delete workerTimer;
 }
 
 
-void ServerWorker::startWorker() {
+void ServerWorker::startWorker()
+{
     operators = std::vector<CallProcessing>(opNumber);
     for (size_t i = 0; i < operators.size(); ++i)
     {
@@ -25,9 +26,10 @@ void ServerWorker::startWorker() {
 }
 
 
-void ServerWorker::operatorsAssign() {
+void ServerWorker::operatorsAssign()
+{
         m_mtx.lock();
-         for (size_t i = 0; i < operators.size(); ++i)
+        for (size_t i = 0; i < operators.size(); ++i)
         {
             if (operators[i].m_isBusy == false && queue.empty() == false)
             {
@@ -43,14 +45,21 @@ void ServerWorker::operatorsAssign() {
         m_mtx.unlock();
 }
 
-void ServerWorker::checkQueue(long number) {
+bool ServerWorker::checkQueue(long number)//
+{
+    bool isFull=false;
     qDebug() <<"Check queue";
     m_mtx.lock();
     if (queue.size() >= queueMaxSize)
     {
-        qDebug() <<"Queue is full";
+        qDebug() <<"Queue is full";//ответ на уровне сервера нужен
+        isFull=true;
     }
     else
+    {
+        isFull=false;
         queue.push(number);
+    }
     m_mtx.unlock();
+    return isFull;
 }
