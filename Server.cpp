@@ -118,7 +118,7 @@ void Server::runServer() {
 
            }
            else {
-                    handleIncorrectRequest(request, socket);
+               handleIncorrectRequest(request, socket);
 
            }
            // Close the socket

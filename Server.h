@@ -8,12 +8,11 @@
 #include <queue>
 #include <mutex>
 #include "Serverworker.h"
+#include "CDRWorker.h"
 
 
 //ПОПРАВИТЬ ПАБЛИК ПРАЙВАТ
-//ВЫНЕСТИ СЕРВЕР ВОРКЕР В ОТДЕЛЬНЫЙ КЛАСС+
 //Воркер описание зачем он нужен
-
 //ДОБАВИТЬ ДЕСТРКУТОРЫ НА ВСЕ NEW ТРЕД НАДО ВРОДЕ ПРЕДВАРИТЕЛЬНО ОСТАНОВиТЬ
 
 
@@ -27,7 +26,6 @@ public:
     explicit Server(ConfigJson cfg);
     ~Server();
     ServerWorker* serverWorker;//
-    QTimer* workerTimer;
 
     bool isRunning = false;
     long createID(long phoneNumber);
