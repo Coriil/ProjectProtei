@@ -17,14 +17,12 @@ Server::~Server()
     delete serverWorker;
 }
 
-using tcp = boost::asio::ip::tcp;
-namespace http = boost::beast::http;//ДОЛЖНО БЫТЬ В НАЧАЛЕ ФАЙЛА ИЛИ В ФУНКЦИИИ В НАЧАЛЕ А НЕ В СЕРЕДИНЕ
 
 //создание идентификатора заявки CallID
-long Server::createID(long phoneNumber)
+long Server::createID(long phoneNumber)//ПОЧЕМУ ОТРИЦАТЕЛЬНЫЕ АААА
 {
     long msecCur = QTime(0, 0, 0).msecsTo(QTime::currentTime());//время (мсек) с начала дня до момента прихода заявки
-    long ID =phoneNumber^msecCur;//операция XOR для создания ID из номера и времени
+    long ID = phoneNumber^msecCur;//операция XOR для создания ID из номера и времени
     return ID;
 }
 
@@ -55,7 +53,21 @@ void Server::handleRequestOverload(boost::beast::http::request<boost::beast::htt
     //response.set(http::field::content_type, "text/plain");
     response.body() = "error: server is overloaded";//в случае перегрузки сервера
     response.prepare_payload();
+    // отправка ответа клиенту
+    boost::beast::http::write(socket, response);
+}
 
+void Server::handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
+{
+    namespace http = boost::beast::http;
+    // подготовка ответа
+    http::response<http::string_body> response;
+    response.version(request.version());
+    response.result(http::status::ok);
+    response.set(http::field::server, "My HTTP Server");
+    response.set(http::field::content_type, "text/plain");
+    response.body() = "error:incorrect number";//в случае перегрузки сервера
+    response.prepare_payload();
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
 }
@@ -72,37 +84,42 @@ void Server::runServer() {
 
            tcp::socket socket(io_context);
            acceptor.accept(socket);
-           // Read the HTTP request
+
            boost::beast::flat_buffer buffer;
            http::request<http::string_body> request;
            boost::beast::http::read(socket, buffer, request);
-
-           // Handle the request
-           if(request.method() == http::verb::post) {
+           if(request.method() == http::verb::post) {//?
                qDebug() << "Request getted";
-               //QTime callIn = QTime::currentTime();
-               // Определяем, что это POST-запрос
-               // Извлекаем данные из запроса (body)
                std::string requestBody = request.body();
-               // Здесь вы можете извлечь номер из requestBody и передать его в handleRequest
-               // Например, если номер находится в строке "number=12345678901", то можно извлечь его так:
-               std::string numberString = requestBody.substr(requestBody.find("number=") + strlen("number="));
+               std::string numberString = requestBody;//.substr();//
+               /*std::string numberString = requestBody.substr(requestBody.find("number=") + strlen("number="));
                // Преобразуем строку в число
-               long number = std::stoll(numberString);//DOUBLE ХОТЯ iNT СДЕЛАТЬ ПРОВЕРКУ stoll
-               if(!(serverWorker->checkQueue(number)))
-               {
-               //ПРОВЕРКА ВОЗВРАТА СДЕЛАТЬ ЗАПРОС НАЗАД ЧТО НЕ ДОБАВИЛИИ
-               handleRequest(request, socket, number);
+                double number = std::stoll(numberString);*/
+               // Преобразуем строку в число
+               long number=0;
+               try{
+                   number = std::stol(numberString);
                }
+               catch(const std::invalid_argument){
+                  handleIncorrectRequest(request, socket);
+               }
+               if (number>0)
+                {
+                   if(!(serverWorker->checkQueue(number)))
+                   {
+                    handleRequest(request, socket, number);
+                   }
+                   else
+                    handleRequestOverload(request, socket);
+                }
                else
-               handleRequestOverload(request, socket);
-
+                    handleIncorrectRequest(request, socket);
 
 
            }
            else {
-               // Это не POST-запрос
-               //handleRequest(request, socket);
+                    handleIncorrectRequest(request, socket);
+
            }
            // Close the socket
            socket.shutdown(tcp::socket::shutdown_send);

@@ -22,7 +22,7 @@ void ServerWorker::startWorker()
     }
     workerTimer = new QTimer();
     connect(workerTimer, &QTimer::timeout, this, &ServerWorker::operatorsAssign);
-    workerTimer->start(1000); // Вызываем функцию каждsые N мс
+    workerTimer->start(500);
 }
 
 

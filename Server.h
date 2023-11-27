@@ -31,8 +31,9 @@ public:
 
     bool isRunning = false;
     long createID(long phoneNumber);
-    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);
+    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);//мда
     void handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);
+    void handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);;
 
 signals:
     void assignOp();//Вообще используется
