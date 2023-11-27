@@ -15,8 +15,7 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
     //ConfigJson conf("//home/anatoly/project");
     ConfigJson conf("/home/polina/config.json");
-    //QThread *thread2=new QThread();
-   // Op->moveToThread(thread2);
+
 
     //vector<CallProcessing> callingOperators = vector<CallProcessing>(conf.getOpNumber());
     Server *srv = new Server(conf.getOpNumber(), conf.getQueueSize());

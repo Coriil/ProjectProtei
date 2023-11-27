@@ -11,6 +11,7 @@ SOURCES += \
         Callprocessing.cpp \
         Configjson.cpp \
         Server.cpp \
+        Serverworker.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -21,6 +22,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     Callprocessing.h \
     Configjson.h \
-    Server.h
+    Server.h \
+    Serverworker.h
 
 

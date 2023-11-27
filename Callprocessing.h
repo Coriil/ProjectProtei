@@ -13,7 +13,6 @@ class CallProcessing : public QObject
     int m_timerNumber = 0;
      Q_OBJECT
 
-
 public:
      bool m_isBusy;
     //std::vector<CallProcessing> allOp;
