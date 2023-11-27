@@ -1,11 +1,11 @@
 #include "Server.h"
 
 
-Server::Server(ConfigJson getCfg())
+Server::Server(ConfigJson cfg)
 {
      isRunning=true;
      checkQueryThread = new QThread();
-     serverWorker = new ServerWorker(getCfg().getOpNumber(), getCfg().getQueueSize());
+     serverWorker = new ServerWorker(cfg);
      serverWorker->moveToThread(checkQueryThread);
      connect(checkQueryThread, &QThread::started, serverWorker, &ServerWorker::startWorker);
      checkQueryThread->start();
@@ -24,6 +24,7 @@ long Server::createID(long phoneNumber)
 
 
 void Server::handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num) {
+    namespace http = boost::beast::http;
     // Prepare the reАsponse message
     http::response<http::string_body> response;
     response.version(request.version());
@@ -40,6 +41,8 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
 
 
 void Server::runServer() {
+    using tcp = boost::asio::ip::tcp;
+    namespace http = boost::beast::http;
     boost::asio::io_context io_context;
        tcp::acceptor acceptor(io_context, {tcp::v4(), 8080});
 
@@ -57,8 +60,6 @@ void Server::runServer() {
            // Handle the request
            if(request.method() == http::verb::post) {
                qDebug() << "Request getted";
-
-
                //QTime callIn = QTime::currentTime();
                // Определяем, что это POST-запрос
                // Извлекаем данные из запроса (body)

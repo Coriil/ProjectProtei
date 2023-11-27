@@ -26,7 +26,7 @@ public:
     ServerWorker* serverWorker;//
     QTimer* workerTimer;
 
-    explicit Server(ConfigJson getCfg());
+    explicit Server(ConfigJson cfg);
     bool isRunning = false;
 
     long createID(long phoneNumber);

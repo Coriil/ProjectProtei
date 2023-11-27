@@ -1,6 +1,6 @@
 #include "Serverworker.h"
 
-ServerWorker::ServerWorker(int opNumber, int queueSize) : queueMaxSize(queueSize), opNumber(opNumber)
+ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), opNumber(cfg.getOpNumber())
 {
 
 }
@@ -19,26 +19,31 @@ void ServerWorker::startWorker() {
 }
 
 void ServerWorker::operatorsAssign() {
+        m_mtx.lock();
          for (size_t i = 0; i < operators.size(); ++i)
         {
             if (operators[i].m_isBusy == false && queue.empty() == false)
             {
                 qDebug() <<"Operators assign";
-                int number = queue.front();
+                long number = queue.front();
                 operators[i].m_isBusy = true;
                 operators[i].computeData(number);
                 qDebug() << "Queue size"<<queue.size();
                 queue.pop();
             }
+
         }
+        m_mtx.unlock();
 }
 
-void ServerWorker::checkQueue(int number) {
+void ServerWorker::checkQueue(long number) {
     qDebug() <<"Check queue";
+    m_mtx.lock();
     if (queue.size() >= queueMaxSize)
     {
         qDebug() <<"Queue is full";
     }
     else
         queue.push(number);
+    m_mtx.unlock();
 }

@@ -6,27 +6,31 @@
 #include <QObject>
 #include <iostream>
 #include <QThread>
+#include "Configjson.h"
 
 class CallProcessing : public QObject
 {
     QTimer* m_timer;
     int m_timerNumber = 0;
-     Q_OBJECT
+    int m_BusyOpTimeMin;
+    int m_BusyOpTimeMax;
+    Q_OBJECT
 
 public:
      bool m_isBusy;
     //std::vector<CallProcessing> allOp;
-    CallProcessing();
+    CallProcessing(ConfigJson cfg);
     ~CallProcessing();
 
     void setNumber(int i){m_timerNumber=i;};
+
     int initAvailableOp(int opNumber);
 
 signals:
-    void computeData(int number);
+    void computeData(long number);
 
 private slots:
-    void assignOp(int number);
+    void assignOp(long number);
     void releaseOp();
 
 };

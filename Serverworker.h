@@ -4,8 +4,9 @@
 #include <QObject>
 #include <QTimer>
 #include "Callprocessing.h"
+#include "Configjson.h"
 #include <queue>
-#include <mutex>
+#include <QMutex>
 
 
 class ServerWorker : public QObject
@@ -14,14 +15,15 @@ class ServerWorker : public QObject
 
 public:
     QTimer* workerTimer;
-    ServerWorker(int opNumber, int queueSize);//Это говно, передавать весь конфиг нужно
+    explicit ServerWorker(ConfigJson cfg);
     std::queue<int> queue;
     const size_t queueMaxSize;
     const size_t opNumber;
     std::vector<CallProcessing> operators;
-    explicit ServerWorker(QObject *parent = nullptr);
 
-    void checkQueue(int number); //У СHeck cqueue  и operatorsAssign общие данные - надо добавить мьютекс
+    QMutex m_mtx;
+
+    void checkQueue(long number); //У СHeck cqueue  и operatorsAssign общие данные - надо добавить мьютекс+
 
 public slots:
      void operatorsAssign();

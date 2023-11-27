@@ -1,7 +1,9 @@
 #include "Callprocessing.h"
 
-CallProcessing::CallProcessing()
+CallProcessing::CallProcessing(ConfigJson cfg)
 {
+    m_BusyOpTimeMin = cfg.getOpTimeMin();
+    m_BusyOpTimeMax = cfg.getOpTimeMax();
     m_timer = new QTimer(this);
     m_timer->setSingleShot(true);
     connect(m_timer, &QTimer::timeout, this, &CallProcessing::releaseOp);//, Qt::DirectConnection);
@@ -15,13 +17,12 @@ CallProcessing::~CallProcessing()
 
 
 
-void CallProcessing::assignOp(int number)//эмуляция занятости оператора
+void CallProcessing::assignOp(long number)//эмуляция занятости оператора
 {
     qDebug() << number;
-
-
     srand((unsigned) time(NULL));
-    int randTime = 10 + (rand() % 11);//случайное время занятости оператора
+    //int OpBusyTimeMin = ConfigJson::getOpTimeMin();
+    int randTime = m_BusyOpTimeMin + (rand() % (m_BusyOpTimeMax-m_BusyOpTimeMin));//случайное время занятости оператора
     //m_timer->setInterval(randTime*1000)
     m_timer->setInterval(5000);
     m_timer->start();

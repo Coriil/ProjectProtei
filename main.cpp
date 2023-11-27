@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
 
     //vector<CallProcessing> callingOperators = vector<CallProcessing>(conf.getOpNumber());
-    Server *srv = new Server(conf.getOpNumber(), conf.getQueueSize());
+    Server *srv = new Server(conf);
     srv->runServer();
 
 
