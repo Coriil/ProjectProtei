@@ -31,7 +31,6 @@ class CDRWorker : public QObject
         NO_STATUS = -4
     };
     std::vector<record> journal;
-    QTimer* writeToFileTimer;
 
 public:
     explicit CDRWorker(QObject *parent = nullptr);
@@ -40,8 +39,8 @@ public:
 
 signals:
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
-    void answerCall();//ответ оператора на вызов
-    void finishAnsweredCall();//окончание ответа опреатора
+    void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
+    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
     void callOverload();//вызов не принят (перегрузка)
     void callTimeout();//превышено время ожидания
 
@@ -49,11 +48,11 @@ public slots:
     int writeToFile();
     bool clearJournal();
 
-    void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - запись
-    void recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов - запись
-    void recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора - запись
-    void recCallOverload();//вызов не принят(перегрузка) - запись
-    void recCallTimeout();//превышено время ожидания - запись
+    void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - данные
+    void recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов - данные
+    void recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора - данные
+    void recCallOverload();//вызов не принят(перегрузка) - данные
+    void recCallTimeout();//превышено время ожидания - данные
 
 };
 

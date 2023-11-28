@@ -3,6 +3,7 @@
 #include "Configjson.h"
 #include "Callprocessing.h"
 #include "Server.h"
+#include "CDRWorker.h"
 #include <QDebug>
 #include <vector>
 #include <thread>
