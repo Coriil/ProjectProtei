@@ -14,12 +14,14 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    //ConfigJson conf("//home/anatoly/project");
+    //ConfigJson conf("//home/anatoly/project");/home/polina/gitRepos/
     ConfigJson conf("/home/polina/config.json");
     Server *srv = new Server(conf);
-    srv->runServer();
-
-
+    boost::log::add_common_attributes();
+    boost::log::add_file_log(
+     "log.txt",
+    boost::log::keywords::format = "[%Message%]", boost::log::keywords::auto_flush = true);
+    BOOST_LOG_TRIVIAL(info) << "trrrr";
     QThread *thread1 = new QThread();//
     QObject::connect(thread1, &QThread::finished, thread1, &QThread::deleteLater);//этого достаточно?
     srv->moveToThread(thread1);

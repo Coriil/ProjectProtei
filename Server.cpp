@@ -8,12 +8,23 @@ Server::Server(ConfigJson cfg)
      serverWorker = new ServerWorker(cfg);//класс ServerWorker для обработки очереди заявок
      serverWorker->moveToThread(checkQueryThread);//работа с очередью происходит в новом потоке, отдельном от потока приёма заявок
      connect(checkQueryThread, &QThread::started, serverWorker, &ServerWorker::startWorker);
+
+     cdrThread = new QThread();
+     cdrWorker = new CDRWorker();
+     cdrWorker -> moveToThread(cdrThread);
+     //connect(cdrThread, &QThread::started, cdrWorker, &CDRWorker::startCDR);
      checkQueryThread->start();
+     cdrThread ->start();
+     connect(this, &Server::inCall, cdrWorker, &CDRWorker::recInCall);
+     connect(this, &Server::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
+     connect(this, &Server::finishAnsweredCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
+
 }
 
 Server::~Server()
 {
     delete checkQueryThread;
+    delete cdrThread;
     delete serverWorker;
 }
 
@@ -35,11 +46,14 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
     response.result(http::status::ok);
     response.set(http::field::server, "My HTTP Server");
     //response.set(http::field::content_type, "text/plain");
-    response.body() = std::to_string(createID(num));//в теле ответа содержится CallID
+    long id= createID(num);
+    response.body() = std::to_string(id);//в теле ответа содержится CallID
     response.prepare_payload();
-
+    QDateTime curDT;
+    curDT.currentDateTime();
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
+    //emit inCall(curDT,id,num);
 }
 
 void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)

@@ -6,6 +6,12 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QFile>
+#include <QThread>
+#include <boost/log/core.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
 
 class CDRWorker : public QObject
 {
@@ -33,26 +39,28 @@ class CDRWorker : public QObject
     std::vector<record> journal;
 
 public:
-    explicit CDRWorker(QObject *parent = nullptr);
+    explicit CDRWorker();
     size_t getRecordIndex(long ID);
 
 
+
 signals:
-    void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
+    /*void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
-    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
+    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора*/
     void callOverload();//вызов не принят (перегрузка)
     void callTimeout();//превышено время ожидания
 
 public slots:
-    int writeToFile();
-    bool clearJournal();
+    void startCDR();
+    int writeToFile(size_t id);
+    //bool clearJournal();
 
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - данные
     void recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов - данные
     void recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора - данные
-    void recCallOverload();//вызов не принят(перегрузка) - данные
-    void recCallTimeout();//превышено время ожидания - данные
+    //void recCallOverload();//вызов не принят(перегрузка) - данные
+    //void recCallTimeout();//превышено время ожидания - данные
 
 };
 
