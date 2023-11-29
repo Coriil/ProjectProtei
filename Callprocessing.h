@@ -7,6 +7,7 @@
 #include <iostream>
 #include <QThread>
 #include "Configjson.h"
+#include "CDRWorker.h"
 
 class CallProcessing : public QObject
 {
@@ -30,6 +31,8 @@ public:
 
 signals:
     void computeData(long number);
+
+    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
 
 private slots:
     void assignOp(long number);

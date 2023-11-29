@@ -34,13 +34,14 @@ class CDRWorker : public QObject
         TIMEOUT = -1,
         OVERLOAD = -2,
         CALL_DUPLICATION=-3,//может это не здесь, хз
-        NO_STATUS = -4
+        NOT_FINISHED = -4
     };
     std::vector<record> journal;
 
 public:
     explicit CDRWorker();
     size_t getRecordIndex(long ID);
+    size_t getRecordIndexByNumber(long number);
 
 
 
@@ -57,7 +58,7 @@ public slots:
     //bool clearJournal();
 
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - данные
-    void recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов - данные
+    void recAnswerCall(QDateTime ansDT, int opNum, long number);//ответ оператора на вызов - данные
     void recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора - данные
     //void recCallOverload();//вызов не принят(перегрузка) - данные
     //void recCallTimeout();//превышено время ожидания - данные

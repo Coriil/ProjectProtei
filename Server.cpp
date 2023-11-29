@@ -12,7 +12,7 @@ Server::Server(ConfigJson cfg)
      cdrThread = new QThread();
      cdrWorker = new CDRWorker();
      cdrWorker -> moveToThread(cdrThread);
-     //connect(cdrThread, &QThread::started, cdrWorker, &CDRWorker::startCDR);
+     connect(cdrThread, &QThread::started, cdrWorker, &CDRWorker::startCDR);
      checkQueryThread->start();
      cdrThread ->start();
      connect(this, &Server::inCall, cdrWorker, &CDRWorker::recInCall);
@@ -49,11 +49,10 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
     long id= createID(num);
     response.body() = std::to_string(id);//в теле ответа содержится CallID
     response.prepare_payload();
-    QDateTime curDT;
-    curDT.currentDateTime();
+    QDateTime curDT = QDateTime::currentDateTime();
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
-    //emit inCall(curDT,id,num);
+    emit inCall(curDT,id,num);
 }
 
 void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)

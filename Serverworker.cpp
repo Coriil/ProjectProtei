@@ -37,6 +37,8 @@ void ServerWorker::operatorsAssign()
                 long number = queue.front();
                 operators[i].m_isBusy = true;
                 operators[i].computeData(number);
+                QDateTime curDT = QDateTime::currentDateTime();
+                emit answerCall(curDT, i, number);
                 qDebug() << "Queue size"<<queue.size();
                 queue.pop();
             }
@@ -54,6 +56,7 @@ bool ServerWorker::checkQueue(long number)//
     {
         qDebug() <<"Queue is full";//ответ на уровне сервера нужен
         isFull=true;
+        //overload
     }
     else
     {

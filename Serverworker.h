@@ -27,7 +27,8 @@ public:
     QMutex m_mtx;
 
     bool checkQueue(long number);
-
+signals:
+    void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
 public slots:
      void operatorsAssign();
      void startWorker();
