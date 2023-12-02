@@ -26,7 +26,7 @@ void ServerWorker::startWorker()
     }
     workerTimer = new QTimer();
     connect(workerTimer, &QTimer::timeout, this, &ServerWorker::maintainQueue);
-    workerTimer->start(500);
+    workerTimer->start(1000);
 }
 
 void ServerWorker::getFinishAnsweredCall(QDateTime finishDT, long number)
@@ -94,8 +94,9 @@ int ServerWorker::checkQueue(long number)//
             srand(time(NULL));
             int randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
             caller newCaller;
+            newCaller.m_callerNumber = number;
             callsQueue.push_back(newCaller);
-            callsQueue.back().m_callerNumber = number;
+            //callsQueue.back().m_callerNumber = number;
             //callsQueue.back().m_callerTimer->start(randTime*1000);
             isFull=0;//номер добавляется в очередь
         }

@@ -123,11 +123,14 @@ void CDRWorker::recInCall(QDateTime inCall, long ID, long phNumber)
 void CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long number)
 {
     //m_mtxCDR.lock();
+    if (getRecordIndexByNumber(number)!=-1)
+    {
     size_t id = getRecordIndexByNumber(number);
     journal[id].answDT = ansDT;
     journal[id].operNum = opNum;
    // m_mtxCDR.unlock();
      //writeToFile(id);
+    }
 }
 
 void CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long number)
