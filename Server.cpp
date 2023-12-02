@@ -16,7 +16,10 @@ Server::Server(ConfigJson cfg)
      connect(this, &Server::inCall, cdrWorker, &CDRWorker::recInCall);
      connect(this, &Server::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
      connect(serverWorker, &ServerWorker::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
-     //connect(serverWorker &Server::finishAnsweredCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
+     connect(serverWorker, &ServerWorker::finAnswerCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
+     //connect(serverWorker, &ServerWorker::timeoutedCalls, cdrWorker, &CDRWorker::recTimeoutedCalls);
+     connect(this, &Server::callDuplication, cdrWorker, &CDRWorker::recCallDuplication);
+
      connect(this, &Server::overload, cdrWorker, &CDRWorker::recCallOverload);
      checkQueryThread->start();
      cdrThread ->start();
@@ -89,7 +92,7 @@ void Server::handleIncorrectRequest(boost::beast::http::request<boost::beast::ht
 }
 
 
-void Server::handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
+void Server::handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number)
 {
     namespace http = boost::beast::http;
     // подготовка ответа
@@ -102,6 +105,9 @@ void Server::handleCallDuplication(boost::beast::http::request<boost::beast::htt
     response.prepare_payload();
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
+    QDateTime curDT = QDateTime::currentDateTime();
+    long id = createID(number);
+    emit callDuplication(curDT, id, number);
 }
 
 
@@ -143,7 +149,7 @@ void Server::runServer() {
                         handleRequestOverload(request, socket, number);
                         break;
                     case -2://дублирование вызова
-                        handleCallDuplication(request, socket);
+                        handleCallDuplication(request, socket,number);
                        break;
                     default:
                         handleIncorrectRequest(request, socket);

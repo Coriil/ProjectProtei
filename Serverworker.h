@@ -13,10 +13,19 @@
 class ServerWorker : public QObject
 {
     Q_OBJECT
- struct caller{
+ struct caller
+ {
     long  m_callerNumber;
-    QTimer* m_callerTimer;
+    /*QTimer* m_callerTimer;
+    caller()
+    {
+        m_callerTimer = new QTimer();
+        m_callerTimer->setSingleShot(true);
+    }*/
+
 };
+
+
 public:
 
     explicit ServerWorker(ConfigJson cfg);
@@ -37,11 +46,13 @@ public:
     int checkQueue(long number);
 signals:
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
+    void finAnswerCall(QDateTime finishDT, long number);
+    void timeoutedCalls(long timeoutedNumber);
 
 public slots:
     void maintainQueue();
     void startWorker();
-    void recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора - данные
+    void getFinishAnsweredCall(QDateTime finishDT, long ID);
 
 
 

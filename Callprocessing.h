@@ -15,6 +15,7 @@ class CallProcessing : public QObject
     int m_timerNumber = 0;
     int m_BusyOpTimeMin;
     int m_BusyOpTimeMax;
+    long m_processedNumber;
     Q_OBJECT
 
 public:
@@ -29,7 +30,7 @@ public:
 
 signals:
     void computeData(long number);
-    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
+    void finishAnsweredCall(QDateTime finishDT, long number);//окончание ответа опреатора
 
 
 private slots:

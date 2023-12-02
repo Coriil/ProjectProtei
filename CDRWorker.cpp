@@ -59,8 +59,8 @@ int CDRWorker::writeToFile(size_t ind)
     switch (journal[ind].status)
     {
         case CALL_OK:
-            finDT = (journal[ind].finCallDT.toString()).toStdString();
-            answerDT = (journal[ind].answDT.toString()).toStdString();
+            finDT = (journal[ind].finCallDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
+            answerDT = (journal[ind].answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
             opNum = to_string(journal[ind].operNum);
             callDuration = to_string(journal[ind].callDuration);
             break;
@@ -84,7 +84,7 @@ int CDRWorker::writeToFile(size_t ind)
             break;
         default:
             finDT = " ";
-            answerDT = (journal[ind].answDT.toString()).toStdString();
+            answerDT = (journal[ind].answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
             opNum = to_string(journal[ind].operNum);
             callDuration = " ";
             break;
@@ -108,35 +108,42 @@ int callDuration;//продолжительность звонка*/
 
 void CDRWorker::recInCall(QDateTime inCall, long ID, long phNumber)
 {
+    //m_mtxCDR.lock();
     record newRecord;
     newRecord.startCallDT = inCall;
     newRecord.callID = ID;
     newRecord.phoneNumber = phNumber;
     newRecord.status = NOT_FINISHED;
     journal.push_back(newRecord);
+    //m_mtxCDR.unlock();
     //size_t id = getRecordIndex(ID);
     //writeToFile(id);
 }
 
-void CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long number)//ек
+void CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long number)
 {
-     size_t id = getRecordIndexByNumber(number);
-     journal[id].answDT = ansDT;
-     journal[id].operNum = opNum;
-     writeToFile(id);
+    //m_mtxCDR.lock();
+    size_t id = getRecordIndexByNumber(number);
+    journal[id].answDT = ansDT;
+    journal[id].operNum = opNum;
+   // m_mtxCDR.unlock();
+     //writeToFile(id);
 }
 
-void CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
+void CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long number)
 {
-    size_t id = getRecordIndex(ID);
+    m_mtxCDR.lock();
+    size_t id = getRecordIndexByNumber(number);
     journal[id].finCallDT = finishDT;
-    journal[id].callDuration = journal[id].finCallDT.secsTo(journal[id].answDT);
+    journal[id].callDuration = journal[id].answDT.secsTo(journal[id].finCallDT);
     journal[id].status = CALL_OK;
+    m_mtxCDR.unlock();
     writeToFile(id);
 }
 
 void CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
 {
+    m_mtxCDR.lock();
     record newRecord;
     newRecord.startCallDT = inCall;
     newRecord.callID = ID;
@@ -144,6 +151,31 @@ void CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
     newRecord.status = OVERLOAD;
     journal.push_back(newRecord);
     size_t id = getRecordIndex(ID);
+    m_mtxCDR.unlock();
+    writeToFile(id);
+}
+
+void CDRWorker::recTimeoutedCalls(long timeoutedNumber)
+{
+    m_mtxCDR.lock();
+    size_t ind = getRecordIndexByNumber(timeoutedNumber);
+    journal[ind].status = TIMEOUT;
+    m_mtxCDR.unlock();
+    writeToFile(ind);
+
+}
+
+void CDRWorker::recCallDuplication(QDateTime inCall, long ID, long phNumber)
+{
+    m_mtxCDR.lock();
+    record newRecord;
+    newRecord.startCallDT = inCall;
+    newRecord.callID = ID;
+    newRecord.phoneNumber = phNumber;
+    newRecord.status = CALL_DUPLICATION;
+    journal.push_back(newRecord);
+    m_mtxCDR.unlock();
+    size_t id = getRecordIndexByNumber(phNumber);
     writeToFile(id);
 }
 

@@ -22,11 +22,16 @@ void ServerWorker::startWorker()
         operators[i].setNumber(i);
         operators[i].setBusyOpTimeMin(busyOpTimeMin);
         operators[i].setBusyOpTimeMax(busyOpTimeMax);
+        connect(&operators[i], &CallProcessing::finishAnsweredCall, this,&ServerWorker::getFinishAnsweredCall);
     }
     workerTimer = new QTimer();
     connect(workerTimer, &QTimer::timeout, this, &ServerWorker::maintainQueue);
-
     workerTimer->start(500);
+}
+
+void ServerWorker::getFinishAnsweredCall(QDateTime finishDT, long number)
+{
+    emit finAnswerCall(finishDT, number);
 }
 
 
@@ -34,11 +39,23 @@ void ServerWorker::startWorker()
 
 void ServerWorker::maintainQueue()//назначение опрератора и удаление вызовов из очереди
 {
-        m_mtx.lock();
+       /* m_mtx.lock();
+        if (0)//(callsQueue.empty() == false)
+        {
         auto timeouted = std::remove_if(callsQueue.begin(),callsQueue.end(),[]( caller& c)
         {return (!c.m_callerTimer->isActive());});
-        callsQueue.erase(timeouted,callsQueue.end());//удаление заявок с истекшим временем ожидания
-
+        std::vector<caller> timeoutedCallers;
+        if (timeouted!=callsQueue.end())
+        {
+            qDebug() << "timeout";
+            timeoutedCallers.assign(timeouted,callsQueue.end());
+            for (auto &caller :timeoutedCallers)
+            emit timeoutedCalls(caller.m_callerNumber);
+            callsQueue.erase(timeouted,callsQueue.end());//удаление заявок с истекшим временем ожидания
+        }
+        }
+        m_mtx.unlock();*/
+        m_mtx.lock();
         for (size_t i = 0; i < operators.size(); i++)
         {
             if (operators[i].m_isBusy == false && callsQueue.empty() == false)
@@ -77,16 +94,15 @@ int ServerWorker::checkQueue(long number)//
             srand(time(NULL));
             int randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
             caller newCaller;
-            newCaller.m_callerNumber = number;
-            newCaller.m_callerTimer = new QTimer();
-            newCaller.m_callerTimer->setSingleShot(true);
-            newCaller.m_callerTimer->setInterval(randTime*1000);
             callsQueue.push_back(newCaller);
-            callsQueue.back().m_callerTimer->start();
+            callsQueue.back().m_callerNumber = number;
+            //callsQueue.back().m_callerTimer->start(randTime*1000);
             isFull=0;//номер добавляется в очередь
         }
         else
+        {
             isFull=-2;//дубликация вызова - номер уже в очереди
+        }
 
     }
     m_mtx.unlock();

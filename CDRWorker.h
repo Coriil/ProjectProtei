@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QFile>
 #include <QThread>
+#include <QMutex>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -53,7 +54,7 @@ public:
     explicit CDRWorker();
     size_t getRecordIndex(long ID);
     size_t getRecordIndexByNumber(long number);
-
+    QMutex m_mtxCDR;
 
 
 signals:
@@ -67,10 +68,10 @@ public slots:
 
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - данные
     void recAnswerCall(QDateTime ansDT, int opNum, long phNumber);//ответ оператора на вызов - данные
-    void recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора - данные
+    void recFinishAnsweredCall(QDateTime finishDT, long number);//окончание ответа опреатора - данные
     void recCallOverload(QDateTime inCall,long ID, long phNumber);//вызов не принят(перегрузка) - данные
-    //void recCallTimeout();//превышено время ожидания - данные
-
+    void recTimeoutedCalls(long timeoutedNumber);//превышено время ожидания - данные
+    void recCallDuplication(QDateTime inCall, long ID, long phNumber);
 };
 
 #endif // CDRWORKER_H
