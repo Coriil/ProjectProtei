@@ -46,6 +46,7 @@ class CDRWorker : public QObject
             case callStatus::CALL_OK: return "Ok";
             case callStatus::TIMEOUT: return "Timeout";
             case callStatus::OVERLOAD: return "Overload";
+            case callStatus::CALL_DUPLICATION: return "Call duplication";
             case callStatus::NOT_FINISHED: return "Not defined";
             default: return "Unknown error code";
         }

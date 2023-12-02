@@ -32,7 +32,6 @@ size_t CDRWorker::getRecordIndexByNumber(long number)
 void CDRWorker::startCDR()
 {
     boost::log::add_common_attributes();
-
    // Настройка логирования в файл "log.txt"
     boost::log::add_file_log(
      "log.txt",
@@ -178,7 +177,7 @@ void CDRWorker::recCallDuplication(QDateTime inCall, long ID, long phNumber)
     newRecord.status = CALL_DUPLICATION;
     journal.push_back(newRecord);
     m_mtxCDR.unlock();
-    size_t id = getRecordIndexByNumber(phNumber);
+    size_t id = getRecordIndex(ID);
     writeToFile(id);
 }
 
