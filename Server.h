@@ -30,15 +30,16 @@ public:
     CDRWorker* cdrWorker;
     bool isRunning = false;
     long createID(long phoneNumber);
-    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);//мда
-    void handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);
-    void handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);;
-
+    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);
+    void handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket,long num);
+    void handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);
+    void handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);
 signals:
     void assignOp();//Вообще используется
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
+    void overload(QDateTime ansDT,long ID,int opNum);
 
 public slots:
     void runServer();

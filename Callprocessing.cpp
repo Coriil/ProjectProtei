@@ -19,19 +19,16 @@ void CallProcessing::assignOp(long number)//эмуляция занятости 
 {
     srand(time(NULL));
     int randTime = m_BusyOpTimeMin + (rand() % (m_BusyOpTimeMax-m_BusyOpTimeMin));//случайное время занятости оператора, диапазон настраивается в конфигурации
-    //m_timer->setInterval(randTime*1000);
-    m_timer->setInterval(2000);
+    m_timer->setInterval(randTime*1000);
+    //m_timer->setInterval(2000);
     m_timer->start();
     qDebug()<<"timer N"<<m_timerNumber<<"started for" << randTime;
-
-
-
 }
 
 void CallProcessing::releaseOp()
 {
     qDebug()<<"Operator N"<<m_timerNumber<<"finished";
     m_isBusy= false;//оператор освобождается
-
+    emit finishAnsweredCall();
 }
 

@@ -57,7 +57,10 @@ int ConfigJson::readConfigJSON(QString filePath)
         cfgData.timeRmax = jsonObject.value("maxmum time").toInt(-1);
     else
         return -1;
-
+    if (cfgData.timeRmin>cfgData.timeRmax)//неправильные пределы времени - минимальное больше максимального
+    {
+        return -2;
+    }
     if (checkValue(jsonObject, "busyness min time") == 0)
         cfgData.timeOpMin = jsonObject.value("busyness min time").toInt(-1);
     else
@@ -68,7 +71,7 @@ int ConfigJson::readConfigJSON(QString filePath)
     else
         return -1;
 
-    if (cfgData.timeOpMin>cfgData.timeOpMax)//
+    if (cfgData.timeOpMin>cfgData.timeOpMax)//неправильные пределы времени - минимальное больше максимального
     {
         return -2;
     }

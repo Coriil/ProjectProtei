@@ -27,16 +27,15 @@ public:
     void setBusyOpTimeMin(int a){m_BusyOpTimeMin=a;};
     void setBusyOpTimeMax(int b){m_BusyOpTimeMax=b;};
 
-    int initAvailableOp(int opNumber);
-
 signals:
     void computeData(long number);
-
     void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
+
 
 private slots:
     void assignOp(long number);
     void releaseOp();
+
 
 };
 

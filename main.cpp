@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
     //ConfigJson conf("//home/anatoly/project");/home/polina/gitRepos/
+
     ConfigJson conf("/home/polina/config.json");
     Server *srv = new Server(conf);
     QThread *thread1 = new QThread();//

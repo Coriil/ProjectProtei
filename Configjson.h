@@ -27,8 +27,8 @@ public:
     ConfData getCfg(){return cfgData;};
     int getQueueSize(){return cfgData.queueSize;}
     int getOpNumber(){return cfgData.opNumber;}
-    int getTimeRmin(){return cfgData.timeRmin;}
-    int getTimeRmax(){return cfgData.timeRmax;}
+    int getWaitTimeMin(){return cfgData.timeRmin;}
+    int getWaitTimeMax(){return cfgData.timeRmax;}
     int getOpTimeMin(){return cfgData.timeOpMin;}
     int getOpTimeMax(){return cfgData.timeOpMax;}
 

@@ -13,12 +13,13 @@ Server::Server(ConfigJson cfg)
      cdrWorker = new CDRWorker();
      cdrWorker -> moveToThread(cdrThread);
      connect(cdrThread, &QThread::started, cdrWorker, &CDRWorker::startCDR);
-     checkQueryThread->start();
-     cdrThread ->start();
      connect(this, &Server::inCall, cdrWorker, &CDRWorker::recInCall);
      connect(this, &Server::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
-     connect(this, &Server::finishAnsweredCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
-
+     connect(serverWorker, &ServerWorker::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
+     //connect(serverWorker &Server::finishAnsweredCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
+     connect(this, &Server::overload, cdrWorker, &CDRWorker::recCallOverload);
+     checkQueryThread->start();
+     cdrThread ->start();
 }
 
 Server::~Server()
@@ -46,16 +47,15 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
     response.result(http::status::ok);
     response.set(http::field::server, "My HTTP Server");
     //response.set(http::field::content_type, "text/plain");
+    QDateTime curDT = QDateTime::currentDateTime();
     long id= createID(num);
     response.body() = std::to_string(id);//в теле ответа содержится CallID
     response.prepare_payload();
-    QDateTime curDT = QDateTime::currentDateTime();
-    // отправка ответа клиенту
-    boost::beast::http::write(socket, response);
+    boost::beast::http::write(socket, response);// отправка ответа клиенту
     emit inCall(curDT,id,num);
 }
 
-void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
+void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number)
 {
     namespace http = boost::beast::http;
     // подготовка ответа
@@ -68,6 +68,9 @@ void Server::handleRequestOverload(boost::beast::http::request<boost::beast::htt
     response.prepare_payload();
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
+    QDateTime curDT = QDateTime::currentDateTime();
+    long id = createID(number);
+    emit overload(curDT,id,number);
 }
 
 void Server::handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
@@ -84,6 +87,23 @@ void Server::handleIncorrectRequest(boost::beast::http::request<boost::beast::ht
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
 }
+
+
+void Server::handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
+{
+    namespace http = boost::beast::http;
+    // подготовка ответа
+    http::response<http::string_body> response;
+    response.version(request.version());
+    response.result(http::status::ok);
+    response.set(http::field::server, "My HTTP Server");
+    response.set(http::field::content_type, "text/plain");
+    response.body() = "error: call duplication - already in queue ";//в случае перегрузки сервера
+    response.prepare_payload();
+    // отправка ответа клиенту
+    boost::beast::http::write(socket, response);
+}
+
 
 
 
@@ -105,10 +125,6 @@ void Server::runServer() {
                qDebug() << "Request getted";
                std::string requestBody = request.body();
                std::string numberString = requestBody;//.substr();//
-               /*std::string numberString = requestBody.substr(requestBody.find("number=") + strlen("number="));
-               // Преобразуем строку в число
-                double number = std::stoll(numberString);*/
-               // Преобразуем строку в число
                long number=0;
                try{
                    number = std::stol(numberString);
@@ -116,19 +132,25 @@ void Server::runServer() {
                catch(const std::invalid_argument){
                   handleIncorrectRequest(request, socket);
                }
-               if (number>0)
+               if (number>0 &&(std::to_string(number).size()==10))//проверка - номер состоит из 10 цифр
                 {
-                   if(!(serverWorker->checkQueue(number)))
+                   switch(serverWorker->checkQueue(number))
                    {
-                    handleRequest(request, socket, number);
+                    case 0://вызов помещается в очередь
+                        handleRequest(request, socket, number);
+                        break;
+                    case -1://перегрузка - очередь полная
+                        handleRequestOverload(request, socket, number);
+                        break;
+                    case -2://дублирование вызова
+                        handleCallDuplication(request, socket);
+                       break;
+                    default:
+                        handleIncorrectRequest(request, socket);
                    }
-                   else
-                    handleRequestOverload(request, socket);
-                }
+               }
                else
-                    handleIncorrectRequest(request, socket);
-
-
+                    handleIncorrectRequest(request, socket);         
            }
            else {
                handleIncorrectRequest(request, socket);
