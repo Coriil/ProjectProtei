@@ -76,15 +76,16 @@ void ServerWorker::maintainQueue()//назначение опрератора и
 }
 
 
-int ServerWorker::checkQueue(long number, long ID)//
+
+WorkerStatus ServerWorker::checkQueue(long number, long ID)//
 {
-    int isFull=0;
+    WorkerStatus status = WorkerStatus::DEFAULT;
     qDebug() <<"Check queue";
     m_mtx.lock();
     if (callsQueue.size() >= queueMaxSize)
     {
         qDebug() <<"Queue is full";
-        isFull=-1;//overload - очередь заполнена
+        status = WorkerStatus::OVERLOAD;//overload - очередь заполнена
 
     }
     else
@@ -100,14 +101,14 @@ int ServerWorker::checkQueue(long number, long ID)//
             callsQueue.push_back(newCaller);
             //callsQueue.back().m_callerNumber = number;
             //callsQueue.back().m_callerTimer->start(randTime*1000);
-            isFull=0;//номер добавляется в очередь
+            status=WorkerStatus::OK;//номер добавляется в очередь
         }
         else
         {
-            isFull=-2;//дубликация вызова - номер уже в очереди
+            status=WorkerStatus::DUPLICATE;//дубликация вызова - номер уже в очереди
         }
 
     }
     m_mtx.unlock();
-    return isFull;
+    return status;
 }

@@ -1,5 +1,5 @@
 #include "Server.h"
-
+namespace http = boost::beast::http;
 
 Server::Server(ConfigJson cfg)
 {
@@ -42,71 +42,51 @@ long Server::createID(long phoneNumber)//ПОЧЕМУ ОТРИЦАТЕЛЬНЫЕ
 }
 
 
-void Server::handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id) {
-    namespace http = boost::beast::http;
-    // подготовка ответа
-    http::response<http::string_body> response;
-    response.version(request.version());
-    response.result(http::status::ok);
-    response.set(http::field::server, "My HTTP Server");
-    //response.set(http::field::content_type, "text/plain");
-    QDateTime curDT = QDateTime::currentDateTime();
-    response.body() = std::to_string(id);//в теле ответа содержится CallID
-    response.prepare_payload();
-    boost::beast::http::write(socket, response);// отправка ответа клиенту
-    emit inCall(curDT,id,num);
-}
-
-void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number, long id)
-{
-    namespace http = boost::beast::http;
-    // подготовка ответа
-    http::response<http::string_body> response;
-    response.version(request.version());
-    response.result(http::status::ok);
-    response.set(http::field::server, "My HTTP Server");
-    //response.set(http::field::content_type, "text/plain");
-    response.body() = "error: server is overloaded";//в случае перегрузки сервера
-    response.prepare_payload();
-    // отправка ответа клиенту
-    boost::beast::http::write(socket, response);
-    QDateTime curDT = QDateTime::currentDateTime();
-    emit overload(curDT,id,number);
-}
-
-void Server::handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket)
-{
-    namespace http = boost::beast::http;
+void Server::handleRequest(http::request<http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id, WorkerStatus status) {
     // подготовка ответа
     http::response<http::string_body> response;
     response.version(request.version());
     response.result(http::status::ok);
     response.set(http::field::server, "My HTTP Server");
     response.set(http::field::content_type, "text/plain");
-    response.body() = "error:incorrect number";//в случае перегрузки сервера
-    response.prepare_payload();
-    // отправка ответа клиенту
-    boost::beast::http::write(socket, response);
+    switch (status) {
+    case WorkerStatus::DEFAULT://неправильный формат номера
+    {
+        response.body() = "error:incorrect number";
+        response.prepare_payload();
+        boost::beast::http::write(socket, response);
+    }
+    break;
+    case WorkerStatus::OK://вызов помещается в очередь
+    {
+        QDateTime curDT = QDateTime::currentDateTime();
+        response.body() = std::to_string(id);//в теле ответа содержится CallID
+        response.prepare_payload();
+        boost::beast::http::write(socket, response);// отправка ответа клиенту
+        emit inCall(curDT,id,num);
+    }
+    break;
+    case WorkerStatus::OVERLOAD://в случае перегрузки сервера
+    {
+        response.body() = "error: server is overloaded";
+        response.prepare_payload();
+        boost::beast::http::write(socket, response);
+        QDateTime curDT = QDateTime::currentDateTime();
+        emit overload(curDT,id, num);
+    }
+    break;
+    case WorkerStatus::DUPLICATE://дублирование вызова
+    {
+        response.body() = "error: call duplication - already in queue ";
+        response.prepare_payload();
+        boost::beast::http::write(socket, response);
+        QDateTime curDT = QDateTime::currentDateTime();
+        emit callDuplication(curDT, id, num);
+    }
+    break;
+    }
+
 }
-
-
-void Server::handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number, long id)
-{
-    namespace http = boost::beast::http;
-    // подготовка ответа
-    http::response<http::string_body> response;
-    response.version(request.version());
-    response.result(http::status::ok);
-    response.set(http::field::server, "My HTTP Server");
-    response.set(http::field::content_type, "text/plain");
-    response.body() = "error: call duplication - already in queue ";//в случае перегрузки сервера
-    response.prepare_payload();
-    // отправка ответа клиенту
-    boost::beast::http::write(socket, response);
-    QDateTime curDT = QDateTime::currentDateTime();
-    emit callDuplication(curDT, id, number);
-}
-
 
 
 
@@ -133,31 +113,19 @@ void Server::runServer() {
                    number = std::stol(numberString);
                }
                catch(const std::invalid_argument){
-                  handleIncorrectRequest(request, socket);
+                  handleRequest(request, socket);
                }
                if (number>0 &&(std::to_string(number).size()==10))//проверка - номер состоит из 10 цифр
                 {
                    long id = createID(number);
-                   switch(serverWorker->checkQueue(number, id))
-                   {
-                    case 0://вызов помещается в очередь
-                        handleRequest(request, socket, number, id);
-                        break;
-                    case -1://перегрузка - очередь полная
-                        handleRequestOverload(request, socket, number, id);
-                        break;
-                    case -2://дублирование вызова
-                        handleCallDuplication(request, socket,number, id);
-                       break;
-                    default:
-                        handleIncorrectRequest(request, socket);
-                   }
+                   WorkerStatus status = serverWorker->checkQueue(number, id);
+                   handleRequest(request, socket, number, id, status);
                }
                else
-                    handleIncorrectRequest(request, socket);         
+                    handleRequest(request, socket);
            }
            else {
-               handleIncorrectRequest(request, socket);
+               handleRequest(request, socket);
 
            }
            // Close the socket

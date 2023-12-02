@@ -9,6 +9,12 @@
 #include "CDRWorker.h"
 #include <QMutex>
 
+enum class WorkerStatus {
+    OK = 0,
+    DEFAULT = -1,
+    OVERLOAD = -2,
+    DUPLICATE = -3
+};
 
 class ServerWorker : public QObject
 {
@@ -44,7 +50,7 @@ public:
     QMutex m_mtx;//мьютекс для защиты общих данных (очереди вызовов) во время операций
     //1. добавления в очередь 2. удаления из очереди при передаче опреатору 3. удаления из очереди из-за таймаута
 
-    int checkQueue(long number, long id);
+    WorkerStatus checkQueue(long number, long id);
 signals:
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     void finAnswerCall(QDateTime finishDT, long number, long ID);

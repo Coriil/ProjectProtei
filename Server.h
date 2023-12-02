@@ -11,10 +11,7 @@
 #include "CDRWorker.h"
 
 
-//ПОПРАВИТЬ ПАБЛИК ПРАЙВАТ
-//Воркер описание зачем он нужен
-//ДОБАВИТЬ ДЕСТРКУТОРЫ НА ВСЕ NEW ТРЕД НАДО ВРОДЕ ПРЕДВАРИТЕЛЬНО ОСТАНОВиТЬ
-
+namespace http = boost::beast::http;
 
 class Server: public QObject
 {
@@ -30,10 +27,8 @@ public:
     CDRWorker* cdrWorker;
     bool isRunning = false;
     long createID(long phoneNumber);
-    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id);
-    void handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket,long num, long id);
-    void handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);
-    void handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id);
+    void handleRequest(http::request<http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num = 0, long id = 0,WorkerStatus status = WorkerStatus::DEFAULT);
+
 signals:
     void assignOp();//Вообще используется
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
