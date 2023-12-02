@@ -1,6 +1,6 @@
 #include "CDRWorker.h"
 
-
+using namespace std;
 CDRWorker::CDRWorker()
 {
 
@@ -32,68 +32,76 @@ size_t CDRWorker::getRecordIndexByNumber(long number)
 void CDRWorker::startCDR()
 {
     boost::log::add_common_attributes();
-   // Настройка логирования в файл "log.txt"
-    boost::log::add_file_log(
-     "log.txt",
+    boost::log::add_file_log(// CDR
+     "CDR.txt",
     boost::log::keywords::format = "[%Message%]", boost::log::keywords::auto_flush = true);
-    BOOST_LOG_TRIVIAL(info) << "log started";
- //b
+    BOOST_LOG_TRIVIAL(info) << "CDR started";
+
 }
 
 int CDRWorker::writeToFile(size_t ind)
 {
-    using namespace std;
-    string newRecord;
-    QDateTime curDT=journal[ind].startCallDT;
+    m_mtxCDR.lock();
+    record currentRec = journal[ind];
+    journal.erase(journal.begin()+ind);
+    QDateTime curDT=currentRec.startCallDT;
     QString curDTstr =  curDT.toString("dd.MM.yyyy hh:mm:ss");
-    //newRecord = journal[id].startCallDT.toString()+" "+journal[id].phoneNumber;
     string startDT = curDTstr.toStdString();
-    string ID = to_string(journal[ind].callID);
-    string phoneNum = to_string(journal[ind].phoneNumber);
-    string status = callStatusToString(journal[ind].status);
-    string finDT;
+    string finishDT;
     string opNum;
     string answerDT;
     string callDuration;
-    switch (journal[ind].status)
+    if (currentRec.callDuration==-1)
     {
-        case CALL_OK:
-            finDT = (journal[ind].finCallDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
-            answerDT = (journal[ind].answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
-            opNum = to_string(journal[ind].operNum);
-            callDuration = to_string(journal[ind].callDuration);
-            break;
-        case TIMEOUT:
-            finDT = " ";//нет
-            answerDT = " ";
-            opNum = " ";
-            callDuration = " ";
-            break;
-        case OVERLOAD:
-            finDT = startDT;
-            answerDT = " ";
-            opNum = " ";
-            callDuration = " ";
-            break;
-        case CALL_DUPLICATION:
-            finDT = startDT;
-            answerDT = " ";
-            opNum = " ";
-            callDuration = " ";
-            break;
-        default:
-            finDT = " ";
-            answerDT = (journal[ind].answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
-            opNum = to_string(journal[ind].operNum);
-            callDuration = " ";
-            break;
+        callDuration = "None";
+    }
+    else
+    {
+       callDuration = to_string(currentRec.callDuration);
+    }
+    if (currentRec.operNum == -1)
+    {
+        opNum = "None";
+    }
+    else
+    {
+        opNum =  to_string(currentRec.operNum);
     }
 
-    newRecord = "call started:" + startDT +" callID:"+ ID + " ph.Number:" + phoneNum + " call finished:" + finDT +
-            " status:" + status + " operator №:" + opNum + " duration:" + callDuration;
-    BOOST_LOG_TRIVIAL(info) << newRecord;// << " " << i;
-    journal.erase(journal.begin()+ind);
-
+    switch (currentRec.status)
+    {
+        case CALL_OK:
+            finishDT = (currentRec.finCallDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
+            answerDT = (currentRec.answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
+            break;
+        case TIMEOUT:
+            finishDT = " ";
+            answerDT = " ";
+            break;
+        case OVERLOAD:
+            finishDT = startDT;
+            answerDT = " ";
+            break;
+        case CALL_DUPLICATION:
+            finishDT = startDT;
+            answerDT = " ";
+            break;
+        default:
+            finishDT = " ";
+            answerDT = (currentRec.answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
+            break;
+    }
+    string status = callStatusToString(currentRec.status);
+    string newRecord =
+            "call started:" + startDT +
+            " callID:"+ to_string(currentRec.callID) +
+            " ph.Number:" + to_string(currentRec.phoneNumber)+
+            " call finished:" + finishDT +
+            " status:" + status +
+            " operator №:" + opNum +
+            " duration:" + callDuration;
+    BOOST_LOG_TRIVIAL(info) << newRecord;
+    m_mtxCDR.unlock();
     return 0;
 }
 /*QDateTime inCallDT;//дата/время поступления вызова

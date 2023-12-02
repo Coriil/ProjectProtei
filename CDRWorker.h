@@ -28,14 +28,13 @@ class CDRWorker : public QObject
     struct record
     {
         QDateTime startCallDT;//дата/время поступления вызова
-        long callID;//идентификатор вызова
-        long phoneNumber;//номер телефона
+        long callID = 0;//идентификатор вызова
+        long phoneNumber = 0;//номер телефона
         QDateTime finCallDT;//дата/время окончания вызова
         callStatus status;//статус (принят, перегрузка, превышено время ожидания)
         QDateTime answDT;//дата/время ответа опретаора
-        int operNum;//номер оператора
-        int callDuration;//продолжытельность звонка
-
+        int operNum = -1;//номер оператора
+        int callDuration = -1;//продолжительность звонка
     };
 
     std::vector<record> journal;
