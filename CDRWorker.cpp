@@ -48,25 +48,19 @@ int CDRWorker::writeToFile(size_t ind)
     QString curDTstr =  curDT.toString("dd.MM.yyyy hh:mm:ss");
     string startDT = curDTstr.toStdString();
     string finishDT;
-    string opNum;
     string answerDT;
+    string opNum;
     string callDuration;
+
     if (currentRec.callDuration==-1)
-    {
         callDuration = "None";
-    }
     else
-    {
        callDuration = to_string(currentRec.callDuration);
-    }
+
     if (currentRec.operNum == -1)
-    {
         opNum = "None";
-    }
     else
-    {
         opNum =  to_string(currentRec.operNum);
-    }
 
     switch (currentRec.status)
     {
@@ -140,10 +134,10 @@ void CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long number)
     }
 }
 
-void CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long number)
+void CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long number, long ID)
 {
     m_mtxCDR.lock();
-    size_t id = getRecordIndexByNumber(number);
+    size_t id = getRecordIndex(ID);
     journal[id].finCallDT = finishDT;
     journal[id].callDuration = journal[id].answDT.secsTo(journal[id].finCallDT);
     journal[id].status = CALL_OK;

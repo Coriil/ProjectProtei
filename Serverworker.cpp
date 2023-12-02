@@ -29,9 +29,9 @@ void ServerWorker::startWorker()
     workerTimer->start(1000);
 }
 
-void ServerWorker::getFinishAnsweredCall(QDateTime finishDT, long number)
+void ServerWorker::getFinishAnsweredCall(QDateTime finishDT, long number, long ID)
 {
-    emit finAnswerCall(finishDT, number);
+    emit finAnswerCall(finishDT, number, ID);
 }
 
 
@@ -62,8 +62,9 @@ void ServerWorker::maintainQueue()//назначение опрератора и
             {
                 qDebug() <<"Operators assign";
                 long number = callsQueue.front().m_callerNumber;
+                long ID = callsQueue.front().m_callerID;
                 operators[i].m_isBusy = true;
-                operators[i].computeData(number);//назначение операторов
+                operators[i].computeData(number,ID);//назначение операторов
                 QDateTime curDT = QDateTime::currentDateTime();
                 emit answerCall(curDT, i, number);
                 qDebug() << "Queue size"<<callsQueue.size();
@@ -75,7 +76,7 @@ void ServerWorker::maintainQueue()//назначение опрератора и
 }
 
 
-int ServerWorker::checkQueue(long number)//
+int ServerWorker::checkQueue(long number, long ID)//
 {
     int isFull=0;
     qDebug() <<"Check queue";
@@ -95,6 +96,7 @@ int ServerWorker::checkQueue(long number)//
             int randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
             caller newCaller;
             newCaller.m_callerNumber = number;
+            newCaller.m_callerID = ID;
             callsQueue.push_back(newCaller);
             //callsQueue.back().m_callerNumber = number;
             //callsQueue.back().m_callerTimer->start(randTime*1000);

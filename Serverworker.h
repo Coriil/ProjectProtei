@@ -16,6 +16,7 @@ class ServerWorker : public QObject
  struct caller
  {
     long  m_callerNumber;
+    long m_callerID;
     /*QTimer* m_callerTimer;
     caller()
     {
@@ -43,16 +44,16 @@ public:
     QMutex m_mtx;//мьютекс для защиты общих данных (очереди вызовов) во время операций
     //1. добавления в очередь 2. удаления из очереди при передаче опреатору 3. удаления из очереди из-за таймаута
 
-    int checkQueue(long number);
+    int checkQueue(long number, long id);
 signals:
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
-    void finAnswerCall(QDateTime finishDT, long number);
+    void finAnswerCall(QDateTime finishDT, long number, long ID);
     void timeoutedCalls(long timeoutedNumber);
 
 public slots:
     void maintainQueue();
     void startWorker();
-    void getFinishAnsweredCall(QDateTime finishDT, long ID);
+    void getFinishAnsweredCall(QDateTime finishDT,long number, long ID);
 
 
 

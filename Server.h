@@ -30,10 +30,10 @@ public:
     CDRWorker* cdrWorker;
     bool isRunning = false;
     long createID(long phoneNumber);
-    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);
-    void handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket,long num);
+    void handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id);
+    void handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket,long num, long id);
     void handleIncorrectRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket);
-    void handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num);
+    void handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id);
 signals:
     void assignOp();//Вообще используется
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов

@@ -15,9 +15,10 @@ CallProcessing::~CallProcessing()
 
 
 
-void CallProcessing::assignOp(long number)//эмуляция занятости оператора
+void CallProcessing::assignOp(long number, long ID)//эмуляция занятости оператора
 {
     m_processedNumber = number;
+    m_processedID = ID;
     srand(time(NULL));
     int randTime = m_BusyOpTimeMin + (rand() % (m_BusyOpTimeMax-m_BusyOpTimeMin));//случайное время занятости оператора, диапазон настраивается в конфигурации
     //m_timer->setInterval(randTime*1000);
@@ -28,10 +29,9 @@ void CallProcessing::assignOp(long number)//эмуляция занятости 
 
 void CallProcessing::releaseOp()
 {
-
     qDebug()<<"Operator N"<<m_timerNumber<<"finished";
     m_isBusy= false;//оператор освобождается
     QDateTime curDT = QDateTime::currentDateTime();
-    emit finishAnsweredCall(curDT, m_processedNumber);
+    emit finishAnsweredCall(curDT, m_processedNumber, m_processedID);
 }
 

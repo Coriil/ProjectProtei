@@ -42,7 +42,7 @@ long Server::createID(long phoneNumber)//ПОЧЕМУ ОТРИЦАТЕЛЬНЫЕ
 }
 
 
-void Server::handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num) {
+void Server::handleRequest(boost::beast::http::request<boost::beast::http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id) {
     namespace http = boost::beast::http;
     // подготовка ответа
     http::response<http::string_body> response;
@@ -51,14 +51,13 @@ void Server::handleRequest(boost::beast::http::request<boost::beast::http::strin
     response.set(http::field::server, "My HTTP Server");
     //response.set(http::field::content_type, "text/plain");
     QDateTime curDT = QDateTime::currentDateTime();
-    long id= createID(num);
     response.body() = std::to_string(id);//в теле ответа содержится CallID
     response.prepare_payload();
     boost::beast::http::write(socket, response);// отправка ответа клиенту
     emit inCall(curDT,id,num);
 }
 
-void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number)
+void Server::handleRequestOverload(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number, long id)
 {
     namespace http = boost::beast::http;
     // подготовка ответа
@@ -72,7 +71,6 @@ void Server::handleRequestOverload(boost::beast::http::request<boost::beast::htt
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
     QDateTime curDT = QDateTime::currentDateTime();
-    long id = createID(number);
     emit overload(curDT,id,number);
 }
 
@@ -92,7 +90,7 @@ void Server::handleIncorrectRequest(boost::beast::http::request<boost::beast::ht
 }
 
 
-void Server::handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number)
+void Server::handleCallDuplication(boost::beast::http::request<boost::beast::http::string_body> &request, boost::asio::ip::tcp::socket &socket, long number, long id)
 {
     namespace http = boost::beast::http;
     // подготовка ответа
@@ -106,7 +104,6 @@ void Server::handleCallDuplication(boost::beast::http::request<boost::beast::htt
     // отправка ответа клиенту
     boost::beast::http::write(socket, response);
     QDateTime curDT = QDateTime::currentDateTime();
-    long id = createID(number);
     emit callDuplication(curDT, id, number);
 }
 
@@ -140,16 +137,17 @@ void Server::runServer() {
                }
                if (number>0 &&(std::to_string(number).size()==10))//проверка - номер состоит из 10 цифр
                 {
-                   switch(serverWorker->checkQueue(number))
+                   long id = createID(number);
+                   switch(serverWorker->checkQueue(number, id))
                    {
                     case 0://вызов помещается в очередь
-                        handleRequest(request, socket, number);
+                        handleRequest(request, socket, number, id);
                         break;
                     case -1://перегрузка - очередь полная
-                        handleRequestOverload(request, socket, number);
+                        handleRequestOverload(request, socket, number, id);
                         break;
                     case -2://дублирование вызова
-                        handleCallDuplication(request, socket,number);
+                        handleCallDuplication(request, socket,number, id);
                        break;
                     default:
                         handleIncorrectRequest(request, socket);
