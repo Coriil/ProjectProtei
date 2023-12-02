@@ -1,9 +1,23 @@
 #include "CDRWorker.h"
 
 using namespace std;
+
 CDRWorker::CDRWorker()
 {
 
+}
+
+string CDRWorker::callStatusToString(callStatus code)
+{
+    switch (code)
+    {
+    case callStatus::CALL_OK: return "Ok";
+    case callStatus::TIMEOUT: return "Timeout";
+    case callStatus::OVERLOAD: return "Overload";
+    case callStatus::CALL_DUPLICATION: return "Call duplication";
+    case callStatus::NOT_FINISHED: return "Not defined";
+    default: return "Unknown error code";
+    }
 }
 
 size_t CDRWorker::getRecordIndex(long ID)
@@ -11,7 +25,7 @@ size_t CDRWorker::getRecordIndex(long ID)
     auto it = std::find_if(journal.begin(), journal.end(), [&ID](const record& r) {
         return r.callID == ID;});
     if (it != journal.end()) {
-       return std::distance(journal.begin(),it);
+        return std::distance(journal.begin(),it);
     } else {
         return -1;
     }

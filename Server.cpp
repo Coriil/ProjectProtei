@@ -1,5 +1,7 @@
 #include "Server.h"
+
 namespace http = boost::beast::http;
+using tcp = boost::asio::ip::tcp;
 
 Server::Server(ConfigJson cfg)
 {
@@ -8,7 +10,6 @@ Server::Server(ConfigJson cfg)
      serverWorker = new ServerWorker(cfg);//класс ServerWorker для обработки очереди заявок
      serverWorker->moveToThread(checkQueryThread);//работа с очередью происходит в новом потоке, отдельном от потока приёма заявок
      connect(checkQueryThread, &QThread::started, serverWorker, &ServerWorker::startWorker);
-
      cdrThread = new QThread();
      cdrWorker = new CDRWorker();
      cdrWorker -> moveToThread(cdrThread);
@@ -19,7 +20,6 @@ Server::Server(ConfigJson cfg)
      connect(serverWorker, &ServerWorker::finAnswerCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
      //connect(serverWorker, &ServerWorker::timeoutedCalls, cdrWorker, &CDRWorker::recTimeoutedCalls);
      connect(this, &Server::callDuplication, cdrWorker, &CDRWorker::recCallDuplication);
-
      connect(this, &Server::overload, cdrWorker, &CDRWorker::recCallOverload);
      checkQueryThread->start();
      cdrThread ->start();
@@ -34,7 +34,7 @@ Server::~Server()
 
 
 //создание идентификатора заявки CallID
-long Server::createID(long phoneNumber)//ПОЧЕМУ ОТРИЦАТЕЛЬНЫЕ АААА
+long Server::createID(long phoneNumber)
 {
     long msecCur = QTime(0, 0, 0).msecsTo(QTime::currentTime());//время (мсек) с начала дня до момента прихода заявки
     long ID = phoneNumber^msecCur;//операция XOR для создания ID из номера и времени
@@ -54,7 +54,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     {
         response.body() = "error:incorrect number";
         response.prepare_payload();
-        boost::beast::http::write(socket, response);
+        http::write(socket, response);
     }
     break;
     case WorkerStatus::OK://вызов помещается в очередь
@@ -62,7 +62,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
         QDateTime curDT = QDateTime::currentDateTime();
         response.body() = std::to_string(id);//в теле ответа содержится CallID
         response.prepare_payload();
-        boost::beast::http::write(socket, response);// отправка ответа клиенту
+        http::write(socket, response);// отправка ответа клиенту
         emit inCall(curDT,id,num);
     }
     break;
@@ -70,7 +70,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     {
         response.body() = "error: server is overloaded";
         response.prepare_payload();
-        boost::beast::http::write(socket, response);
+        http::write(socket, response);
         QDateTime curDT = QDateTime::currentDateTime();
         emit overload(curDT,id, num);
     }
@@ -79,7 +79,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     {
         response.body() = "error: call duplication - already in queue ";
         response.prepare_payload();
-        boost::beast::http::write(socket, response);
+        http::write(socket, response);
         QDateTime curDT = QDateTime::currentDateTime();
         emit callDuplication(curDT, id, num);
     }
@@ -91,23 +91,18 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
 
 
 void Server::runServer() {
-    using tcp = boost::asio::ip::tcp;
-    namespace http = boost::beast::http;
     boost::asio::io_context io_context;
     tcp::acceptor acceptor(io_context, {tcp::v4(), 8080});
-
        while (true) {
-
            tcp::socket socket(io_context);
            acceptor.accept(socket);
-
            boost::beast::flat_buffer buffer;
            http::request<http::string_body> request;
-           boost::beast::http::read(socket, buffer, request);
-           if(request.method() == http::verb::post) {//?
+           http::read(socket, buffer, request);
+           if(request.method() == http::verb::post) {
                qDebug() << "Request getted";
                std::string requestBody = request.body();
-               std::string numberString = requestBody;//.substr();//
+               std::string numberString = requestBody;
                long number=0;
                try{
                    number = std::stol(numberString);
@@ -126,7 +121,6 @@ void Server::runServer() {
            }
            else {
                handleRequest(request, socket);
-
            }
            // Close the socket
            socket.shutdown(tcp::socket::shutdown_send);

@@ -17,6 +17,8 @@
 class CDRWorker : public QObject
 {
     Q_OBJECT
+
+private:
     enum callStatus//набор статусов вызова
     {
         CALL_OK = 0,
@@ -36,36 +38,21 @@ class CDRWorker : public QObject
         int operNum = -1;//номер оператора
         int callDuration = -1;//продолжительность звонка
     };
-
     std::vector<record> journal;
-    std::string callStatusToString(callStatus code)
-    {
-        switch (code)
-        {
-            case callStatus::CALL_OK: return "Ok";
-            case callStatus::TIMEOUT: return "Timeout";
-            case callStatus::OVERLOAD: return "Overload";
-            case callStatus::CALL_DUPLICATION: return "Call duplication";
-            case callStatus::NOT_FINISHED: return "Not defined";
-            default: return "Unknown error code";
-        }
-    }
+    std::string callStatusToString(callStatus code);
+    QMutex m_mtxCDR;
+
 public:
     explicit CDRWorker();
     size_t getRecordIndex(long ID);
     size_t getRecordIndexByNumber(long number);
-    QMutex m_mtxCDR;
-
 
 signals:
-
     void callTimeout();//превышено время ожидания
 
 public slots:
     void startCDR();
     int writeToFile(size_t id);
-    //bool clearJournal();
-
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - данные
     void recAnswerCall(QDateTime ansDT, int opNum, long phNumber);//ответ оператора на вызов - данные
     void recFinishAnsweredCall(QDateTime finishDT, long number, long ID);//окончание ответа опреатора - данные

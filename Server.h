@@ -12,22 +12,23 @@
 
 
 namespace http = boost::beast::http;
+using tcp = boost::asio::ip::tcp;
 
 class Server: public QObject
 {
+    Q_OBJECT
 private:
     QThread* checkQueryThread;//описание
     QThread* cdrThread;
-    Q_OBJECT
-public:
+    void handleRequest(http::request<http::string_body>& request, tcp::socket& socket, long num = 0, long id = 0, WorkerStatus status = WorkerStatus::DEFAULT);
+    long createID(long phoneNumber);
+    ServerWorker* serverWorker;
+    CDRWorker* cdrWorker;
 
+public:
     explicit Server(ConfigJson cfg);
     ~Server();
-    ServerWorker* serverWorker;//
-    CDRWorker* cdrWorker;
     bool isRunning = false;
-    long createID(long phoneNumber);
-    void handleRequest(http::request<http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num = 0, long id = 0,WorkerStatus status = WorkerStatus::DEFAULT);
 
 signals:
     void assignOp();//Вообще используется
@@ -36,6 +37,7 @@ signals:
     void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
     void overload(QDateTime ansDT,long ID,int opNum);
     void callDuplication(QDateTime ansDT,long ID,int opNum);
+
 public slots:
     void runServer();
 
