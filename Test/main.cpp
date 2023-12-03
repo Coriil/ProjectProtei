@@ -8,9 +8,6 @@ int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
 
-
-    ConfigJson hui;
-
     return RUN_ALL_TESTS();
 
 
