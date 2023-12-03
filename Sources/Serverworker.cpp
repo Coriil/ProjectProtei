@@ -1,4 +1,4 @@
-#include "Serverworker.h"
+#include "Include/Serverworker.h"
 
 ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), opNumber(cfg.getOpNumber()),
     busyOpTimeMin(cfg.getOpTimeMin()), busyOpTimeMax(cfg.getOpTimeMax()),

@@ -1,9 +1,9 @@
 #include <QCoreApplication>
 #include <iostream>
-#include "Configjson.h"
-#include "Callprocessing.h"
-#include "Server.h"
-#include "CDRWorker.h"
+#include "Include/Configjson.h"
+#include "Include/Callprocessing.h"
+#include "Include/Server.h"
+#include "Include/CDRWorker.h"
 #include <QDebug>
 #include <vector>
 #include <thread>

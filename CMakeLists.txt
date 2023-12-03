@@ -16,20 +16,20 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 add_definitions(-DBOOST_LOG_DYN_LINK=1)
 
 set(SOURCES
-    Configjson.cpp
-    Serverworker.cpp
-    Callprocessing.cpp
-    Server.cpp
-    CDRWorker.cpp
-    main.cpp
+    Sources/Configjson.cpp
+    Sources/Serverworker.cpp
+    Sources/Callprocessing.cpp
+    Sources/Server.cpp
+    Sources/CDRWorker.cpp
+    Sources/main.cpp
 )
 
 set(HEADERS
-    Configjson.h
-    Serverworker.h
-    Callprocessing.h
-    Server.h
-    CDRWorker.h
+    Include/Configjson.h
+    Include/Serverworker.h
+    Include/Callprocessing.h
+    Include/Server.h
+    Include/CDRWorker.h
 )
 
 add_executable(Json_Timer_Server ${SOURCES} ${HEADERS})
