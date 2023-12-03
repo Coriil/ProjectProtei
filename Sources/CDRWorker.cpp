@@ -7,6 +7,7 @@ CDRWorker::CDRWorker()
 
 }
 
+//преобразует статус вызова в строку
 string CDRWorker::callStatusToString(callStatus code)
 {
     switch (code)
@@ -20,6 +21,7 @@ string CDRWorker::callStatusToString(callStatus code)
     }
 }
 
+//получает индекс записи во внутреннем журнале по ID (Идентификатору вызова)
 int CDRWorker::getRecordIndex(long ID)
 {
     auto it = std::find_if(journal.begin(), journal.end(), [&ID](const record& r) {
@@ -31,7 +33,7 @@ int CDRWorker::getRecordIndex(long ID)
     }
 }
 
-
+//инициализирует файл CDR для записи данных о вызовах
 void CDRWorker::startCDR()
 {
     boost::log::add_common_attributes();
@@ -42,6 +44,7 @@ void CDRWorker::startCDR()
 
 }
 
+//добавляет запись в файл CDR
 int CDRWorker::writeToFile(long ID)
 {
     m_mtxCDR.lock();
@@ -108,6 +111,7 @@ int CDRWorker::writeToFile(long ID)
     return 0;
 }
 
+//добавляет во внутренний журнал запись о входящем вызове
 void CDRWorker::recInCall(QDateTime inCall, long ID, long phNumber)
 {
     m_mtxCDR.lock();
@@ -120,6 +124,7 @@ void CDRWorker::recInCall(QDateTime inCall, long ID, long phNumber)
     m_mtxCDR.unlock();
 }
 
+//Добавляет во внутренний журнал запись об ответе оператора на вызов
 int CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long ID)
 {
     m_mtxCDR.lock();
@@ -135,6 +140,8 @@ int CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long ID)
     return 0;
 }
 
+//Добавляет во внутренний журнал запись об окончании ответа опреатора на вызов
+//и отправляет запись на вывод в CDR
 int CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
 {
     m_mtxCDR.lock();
@@ -151,6 +158,8 @@ int CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
     return writeToFile(ID);;
 }
 
+//Добавляет во внутренний журнал запись о перегрузке (поступление нового вызова при полной очереди)
+//и отправляет запись на вывод в CDR
 int CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
 {
     m_mtxCDR.lock();
@@ -164,6 +173,7 @@ int CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
     return writeToFile(ID);
 }
 
+
 void CDRWorker::recTimeoutedCalls(long timeoutedNumber)
 {
     /*m_mtxCDR.lock();
@@ -174,6 +184,8 @@ void CDRWorker::recTimeoutedCalls(long timeoutedNumber)
 
 }
 
+//Добавляет во внутренний журнал запись о дублировании вызова (вызов с таким номером уже есть в очереди)
+//и отправляет запись на вывод в CDR
 int CDRWorker::recCallDuplication(QDateTime inCall, long ID, long phNumber)
 {
     m_mtxCDR.lock();

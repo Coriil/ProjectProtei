@@ -9,7 +9,7 @@
 #include <Configjson.h>
 #include <CDRWorker.h>
 
-
+//класс, обслуживающий очередь заявок
 enum class WorkerStatus {
     OK = 0,
     DEFAULT = -1,

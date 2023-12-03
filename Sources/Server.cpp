@@ -41,7 +41,7 @@ long Server::createID(long phoneNumber)
     return ID;
 }
 
-
+//обработка запросов (случаи помещения запроса в очередь, перегрузки при заполненной очереди, дублирования вызовов)
 void Server::handleRequest(http::request<http::string_body>& request, boost::asio::ip::tcp::socket& socket, long num, long id, WorkerStatus status) {
     // подготовка ответа
     http::response<http::string_body> response;
@@ -89,7 +89,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
 }
 
 
-
+//запуск сервера
 void Server::runServer() {
     boost::asio::io_context io_context;
     tcp::acceptor acceptor(io_context, {tcp::v4(), 8080});
@@ -122,7 +122,6 @@ void Server::runServer() {
            else {
                handleRequest(request, socket);
            }
-           // Close the socket
            socket.shutdown(tcp::socket::shutdown_send);
        }
 }

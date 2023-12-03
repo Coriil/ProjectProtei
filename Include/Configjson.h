@@ -4,6 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+//класс для чтения json-файла конфигурации сервера и проверки корректности полей этого файла
 class ConfigJson
 {
 private:

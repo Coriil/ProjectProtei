@@ -12,6 +12,7 @@
 namespace http = boost::beast::http;
 using tcp = boost::asio::ip::tcp;
 
+//основной класс программы - принимает http-запросы и формирует ответы
 class Server: public QObject
 {
     Q_OBJECT

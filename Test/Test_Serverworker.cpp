@@ -3,14 +3,12 @@
 #include <Serverworker.h>
 #include <Configjson.h>
 
-
 using namespace testing;
-
 
 class ServerWorkerTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Инициализация состояния перед каждым тестом
+
         QJsonObject jsObj =
         {
             {"queue size", 2},

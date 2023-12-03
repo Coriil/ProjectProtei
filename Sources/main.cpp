@@ -14,10 +14,8 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    //ConfigJson conf("//home/anatoly/project");/home/polina/gitRepos/
-
-    ConfigJson conf("/home/polina/config.json");
-    Server *srv = new Server(conf);
+    ConfigJson conf("/home/polina/config.json");//чтение файла конфигурации
+    Server *srv = new Server(conf);//создание сервера с настройками из файла конфигурации
     QThread *thread1 = new QThread();//
     QObject::connect(thread1, &QThread::finished, thread1, &QThread::deleteLater);//этого достаточно?
     srv->moveToThread(thread1);

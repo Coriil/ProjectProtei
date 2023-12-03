@@ -14,12 +14,14 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 
+//класс для ведения call detailed record и вывода записей в файл CDR.txt
 class CDRWorker : public QObject
 {
     Q_OBJECT
 
 private:
-    enum callStatus//набор статусов вызова
+    //набор статусов вызова
+    enum callStatus
     {
         CALL_OK = 0,
         TIMEOUT = -1,
@@ -27,6 +29,7 @@ private:
         CALL_DUPLICATION=-3,//может это не здесь, хз
         NOT_FINISHED = -4
     };
+    //структура одиночной записи в журнале
     struct record
     {
         QDateTime startCallDT;//дата/время поступления вызова
@@ -53,7 +56,6 @@ signals:
 
 public slots:
     void startCDR();
-
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     int recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     int recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора

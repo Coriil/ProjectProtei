@@ -14,7 +14,7 @@ ServerWorker::~ServerWorker()
         delete workerTimer;
 }
 
-
+//запуск обслуживания очереди
 void ServerWorker::startWorker()
 {
     operators = std::vector<CallProcessing>(opNumber);
@@ -73,7 +73,7 @@ void ServerWorker::maintainQueue()//назначение опрератора и
 }
 
 
-
+//проверяет очередь, проверяет случаи перегрузки и дублирования вызовов, добавляет вызов в очередь
 WorkerStatus ServerWorker::checkQueue(long number, long ID)//
 {
     WorkerStatus status = WorkerStatus::DEFAULT;
