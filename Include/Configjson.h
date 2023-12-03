@@ -19,7 +19,7 @@ private:
     ConfData cfgData;
     void setDefaultValues();
     int checkValue(QJsonObject &jsonObject, QString valName);
-
+    int validateJson(QJsonObject &jsonObject);
 public:
     ConfigJson();
     ConfigJson(QString filePath);
@@ -31,6 +31,7 @@ public:
     int getOpTimeMin(){return cfgData.timeOpMin;}
     int getOpTimeMax(){return cfgData.timeOpMax;}
     int readConfigJSON(QString filePath);
+    int readConfigJSON(QJsonObject &obj);
 };
 
 #endif // CONFIGJSON_H

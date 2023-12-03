@@ -38,6 +38,17 @@ int ConfigJson::readConfigJSON(QString filePath)
 
     QJsonObject jsonObject = jsonDoc.object();
 
+    return validateJson(jsonObject);
+}
+
+int ConfigJson::readConfigJSON(QJsonObject &obj)
+{
+    return validateJson(obj);
+}
+
+
+int ConfigJson::validateJson(QJsonObject &jsonObject)
+{
     if ((checkValue(jsonObject, "queue size") == 0)&&(jsonObject.value("queue size").toInt(-1)>1))//минимальный размер очереди равен 1
         cfgData.queueSize = jsonObject.value("queue size").toInt(-1);
     else
@@ -78,6 +89,7 @@ int ConfigJson::readConfigJSON(QString filePath)
     return 0;
 }
 
+
 //проверка значений из JSON-файла
 int ConfigJson::checkValue(QJsonObject &jsonObject, QString valName)
 {
@@ -91,6 +103,8 @@ int ConfigJson::checkValue(QJsonObject &jsonObject, QString valName)
         return -1;
     return 0;
 }
+
+
 
 
 void ConfigJson::setDefaultValues()
