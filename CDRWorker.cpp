@@ -11,8 +11,8 @@ string CDRWorker::callStatusToString(callStatus code)
 {
     switch (code)
     {
-    case callStatus::CALL_OK: return "Ok";
-    case callStatus::TIMEOUT: return "Timeout";
+    case callStatus::CALL_OK: return "Ok       ";
+    case callStatus::TIMEOUT: return "Timeout  ";
     case callStatus::OVERLOAD: return "Overload";
     case callStatus::CALL_DUPLICATION: return "Call duplication";
     case callStatus::NOT_FINISHED: return "Not defined";
@@ -93,7 +93,7 @@ int CDRWorker::writeToFile(size_t ind)
     string newRecord =
             "call started:" + startDT +
             "; callID:"+ to_string(currentRec.callID) +
-            "; ph.Number:" + to_string(currentRec.phoneNumber)+
+            "; phone number:" + to_string(currentRec.phoneNumber)+
             "; call finished:" + finishDT +
             "; status:" + status +
             "; operator №:" + opNum +
