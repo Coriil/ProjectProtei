@@ -5,8 +5,8 @@
 #include <QDebug>
 #include <QObject>
 #include <QThread>
-#include "Configjson.h"
-#include "CDRWorker.h"
+#include <Configjson.h>
+#include <CDRWorker.h>
 
 class CallProcessing : public QObject
 {

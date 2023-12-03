@@ -15,6 +15,7 @@ find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 add_definitions(-DBOOST_LOG_DYN_LINK=1)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/Include)
 set(SOURCES
     Sources/Configjson.cpp
     Sources/Serverworker.cpp

@@ -5,9 +5,9 @@
 #include <QTimer>
 #include <QMutex>
 #include <algorithm>
-#include "Callprocessing.h"
-#include "Configjson.h"
-#include "CDRWorker.h"
+#include <Callprocessing.h>
+#include <Configjson.h>
+#include <CDRWorker.h>
 
 
 enum class WorkerStatus {

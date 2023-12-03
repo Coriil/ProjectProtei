@@ -1,4 +1,4 @@
-#include "Include/Configjson.h"
+#include <Configjson.h>
 #include <QFile>
 #include <QDebug>
 

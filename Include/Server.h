@@ -3,10 +3,10 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <QTime>
-#include "Callprocessing.h"
-#include "Configjson.h"
-#include "Serverworker.h"
-#include "CDRWorker.h"
+#include <Callprocessing.h>
+#include <Configjson.h>
+#include <Serverworker.h>
+#include <CDRWorker.h>
 
 
 namespace http = boost::beast::http;
