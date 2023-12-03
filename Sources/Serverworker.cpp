@@ -10,7 +10,8 @@ ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), o
 
 ServerWorker::~ServerWorker()
 {
-    delete workerTimer;
+    if (workerTimer!=nullptr)
+        delete workerTimer;
 }
 
 

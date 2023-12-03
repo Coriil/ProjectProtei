@@ -26,7 +26,7 @@ class ServerWorker : public QObject
     long m_callerID;
 };
 private:
-     QTimer* workerTimer;
+     QTimer* workerTimer = nullptr;
      const size_t queueMaxSize;//а нужен ли вообще конст если будет перечтение?
      const size_t opNumber;
      const int busyOpTimeMin;

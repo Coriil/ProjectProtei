@@ -75,6 +75,7 @@ TEST(ConfigjsonTest, JsonCheckZeroValue)
     int answ = cfg.readConfigJSON(jsObj);
     ASSERT_NE (answ, 0);
 }
+
 TEST(ConfigjsonTest, JsonCheckNegativeValue)
 {
     ConfigJson cfg;
@@ -86,6 +87,22 @@ TEST(ConfigjsonTest, JsonCheckNegativeValue)
         {"maxmum time", 7},
         {"busyness min time", 20},
         {"busyness max time", 50}
+    };
+    int answ = cfg.readConfigJSON(jsObj);
+    ASSERT_NE (answ, 0);
+}
+
+TEST(ConfigjsonTest, JsonCheckMinMaxIncorrect)
+{
+    ConfigJson cfg;
+    QJsonObject jsObj =
+    {
+        {"queue size", 2},
+        {"operators number", 2},
+        {"minimal time", 5},
+        {"maxmum time", 7},
+        {"busyness min time", 50},
+        {"busyness max time", 30}
     };
     int answ = cfg.readConfigJSON(jsObj);
     ASSERT_NE (answ, 0);

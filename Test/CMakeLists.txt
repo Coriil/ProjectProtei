@@ -53,6 +53,7 @@ include_directories(${PARENT_DIR}/Include)
 set(SOURCES
     main.cpp
     Test_Configjson.cpp
+    Test_Serverworker.cpp
     ${PARENT_DIR}/Sources/Configjson.cpp
      ${PARENT_DIR}/Sources/Serverworker.cpp
      ${PARENT_DIR}/Sources/Callprocessing.cpp
