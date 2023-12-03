@@ -29,7 +29,7 @@ public:
 
 signals:
     void computeData(long number, long ID);
-    void finishAnsweredCall(QDateTime finishDT, long number, long ID);//окончание ответа опреатора
+    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
 
 private slots:
     void assignOp(long number, long ID);

@@ -30,6 +30,6 @@ void CallProcessing::releaseOp()
     qDebug()<<"Operator N"<<m_timerNumber<<"finished";
     m_isBusy= false;//оператор освобождается
     QDateTime curDT = QDateTime::currentDateTime();
-    emit finishAnsweredCall(curDT, m_processedNumber, m_processedID);
+    emit finishAnsweredCall(curDT, m_processedID);
 }
 

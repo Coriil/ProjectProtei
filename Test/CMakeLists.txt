@@ -54,6 +54,7 @@ set(SOURCES
     main.cpp
     Test_Configjson.cpp
     Test_Serverworker.cpp
+    Test_CDRWorker.cpp
     ${PARENT_DIR}/Sources/Configjson.cpp
      ${PARENT_DIR}/Sources/Serverworker.cpp
      ${PARENT_DIR}/Sources/Callprocessing.cpp

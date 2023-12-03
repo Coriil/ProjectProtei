@@ -45,13 +45,12 @@ public:
 
 signals:
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
-    void finAnswerCall(QDateTime finishDT, long number, long ID);
+    void finAnswerCall(QDateTime finishDT, long ID);
     void timeoutedCalls(long timeoutedNumber);
 
 public slots:
     void maintainQueue();
     void startWorker();
-    void getFinishAnsweredCall(QDateTime finishDT,long number, long ID);
 };
 
 #endif // SERVERWORKER_H

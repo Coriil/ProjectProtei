@@ -23,17 +23,13 @@ void ServerWorker::startWorker()
         operators[i].setNumber(i);
         operators[i].setBusyOpTimeMin(busyOpTimeMin);
         operators[i].setBusyOpTimeMax(busyOpTimeMax);
-        connect(&operators[i], &CallProcessing::finishAnsweredCall, this,&ServerWorker::getFinishAnsweredCall);
+        connect(&operators[i], &CallProcessing::finishAnsweredCall, this,&ServerWorker::finAnswerCall);
     }
     workerTimer = new QTimer();
     connect(workerTimer, &QTimer::timeout, this, &ServerWorker::maintainQueue);
     workerTimer->start(1000);
 }
 
-void ServerWorker::getFinishAnsweredCall(QDateTime finishDT, long number, long ID)
-{
-    emit finAnswerCall(finishDT, number, ID);
-}
 
 
 

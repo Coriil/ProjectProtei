@@ -42,6 +42,8 @@ private:
     std::string callStatusToString(callStatus code);
     QMutex m_mtxCDR;
     int getRecordIndex(long ID);
+    int writeToFile(long ID);
+
 public:
 
     CDRWorker();
@@ -51,13 +53,13 @@ signals:
 
 public slots:
     void startCDR();
-    int writeToFile(long ID);
+
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     int recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
-    int recFinishAnsweredCall(QDateTime finishDT, long number, long ID);//окончание ответа опреатора
-    void recCallOverload(QDateTime inCall,long ID, long phNumber);//вызов не принят(перегрузка)
+    int recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
+    int recCallOverload(QDateTime inCall,long ID, long phNumber);//вызов не принят(перегрузка)
     void recTimeoutedCalls(long timeoutedNumber);//превышено время ожидания - данные
-    void recCallDuplication(QDateTime inCall, long ID, long phNumber);//дублирование вызова
+    int recCallDuplication(QDateTime inCall, long ID, long phNumber);//дублирование вызова
 };
 
 #endif // CDRWORKER_H
