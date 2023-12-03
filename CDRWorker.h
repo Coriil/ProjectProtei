@@ -45,7 +45,6 @@ private:
 public:
     explicit CDRWorker();
     size_t getRecordIndex(long ID);
-    size_t getRecordIndexByNumber(long number);
 
 signals:
     void callTimeout();//превышено время ожидания
@@ -53,12 +52,12 @@ signals:
 public slots:
     void startCDR();
     int writeToFile(size_t id);
-    void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов - данные
-    void recAnswerCall(QDateTime ansDT, int opNum, long phNumber);//ответ оператора на вызов - данные
-    void recFinishAnsweredCall(QDateTime finishDT, long number, long ID);//окончание ответа опреатора - данные
-    void recCallOverload(QDateTime inCall,long ID, long phNumber);//вызов не принят(перегрузка) - данные
+    void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
+    void recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
+    void recFinishAnsweredCall(QDateTime finishDT, long number, long ID);//окончание ответа опреатора
+    void recCallOverload(QDateTime inCall,long ID, long phNumber);//вызов не принят(перегрузка)
     void recTimeoutedCalls(long timeoutedNumber);//превышено время ожидания - данные
-    void recCallDuplication(QDateTime inCall, long ID, long phNumber);
+    void recCallDuplication(QDateTime inCall, long ID, long phNumber);//дублирование вызова
 };
 
 #endif // CDRWORKER_H

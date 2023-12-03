@@ -5,8 +5,6 @@
 #include <QTime>
 #include "Callprocessing.h"
 #include "Configjson.h"
-#include <queue>
-#include <mutex>
 #include "Serverworker.h"
 #include "CDRWorker.h"
 

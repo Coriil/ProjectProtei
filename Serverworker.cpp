@@ -66,7 +66,7 @@ void ServerWorker::maintainQueue()//назначение опрератора и
                 operators[i].m_isBusy = true;
                 operators[i].computeData(number,ID);//назначение операторов
                 QDateTime curDT = QDateTime::currentDateTime();
-                emit answerCall(curDT, i, number);
+                emit answerCall(curDT, i, ID);
                 qDebug() << "Queue size"<<callsQueue.size();
                 callsQueue.erase(callsQueue.begin());
             }

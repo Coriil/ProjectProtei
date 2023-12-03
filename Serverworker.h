@@ -3,11 +3,12 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QMutex>
 #include <algorithm>
 #include "Callprocessing.h"
 #include "Configjson.h"
 #include "CDRWorker.h"
-#include <QMutex>
+
 
 enum class WorkerStatus {
     OK = 0,

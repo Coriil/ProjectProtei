@@ -13,8 +13,6 @@ CallProcessing::~CallProcessing()
     delete m_timer;
 }
 
-
-
 void CallProcessing::assignOp(long number, long ID)//эмуляция занятости оператора
 {
     m_processedNumber = number;

@@ -4,7 +4,6 @@
 #include <QTime>
 #include <QDebug>
 #include <QObject>
-#include <iostream>
 #include <QThread>
 #include "Configjson.h"
 #include "CDRWorker.h"
@@ -20,11 +19,10 @@ private:
     long m_processedNumber;
     long m_processedID;
 
-
 public:
-     bool m_isBusy;
-     CallProcessing();
-     ~CallProcessing();
+    bool m_isBusy;
+    CallProcessing();
+    ~CallProcessing();
     void setNumber(int i){m_timerNumber=i;};
     void setBusyOpTimeMin(int a){m_BusyOpTimeMin=a;};
     void setBusyOpTimeMax(int b){m_BusyOpTimeMax=b;};
