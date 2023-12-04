@@ -47,3 +47,12 @@ TEST(CDRWorkerTest, CDRjournalRecordOk_recFinishAnsweredCall)
    int answ = cdrWrk.recFinishAnsweredCall(curDT, 1);
    ASSERT_EQ(answ,0);
 }
+
+TEST(CDRWorkerTest, CDRjournalRecordOk_TimeoutedCall)
+{
+    CDRWorker cdrWrk;
+    QDateTime curDT = QDateTime::currentDateTime();
+    cdrWrk.recInCall(curDT, 1, 7894561230);
+    int answ = cdrWrk.recTimeoutedCalls(1);
+    ASSERT_EQ(answ,0);
+}

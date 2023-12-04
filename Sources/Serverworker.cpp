@@ -90,7 +90,7 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
         {
             srand(time(NULL));
             qint64 randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
-            currentCaller.setTimeoutDT(randTime);
+            currentCaller.setTimeoutDTSecs(randTime);
             callsQueue.push_back(currentCaller);
 
             //callsQueue.back().m_callerNumber = number;

@@ -9,7 +9,8 @@ Caller::Caller(long callerNum, long ID)
     inputDT = QDateTime::currentDateTime();
 }
 
-void Caller::setTimeoutDT(qint64 timeoutTimeSec)
+//функция устанавливает время ожидания в секундах
+void Caller::setTimeoutDTSecs(qint64 timeoutTimeSec)
 {
     timeoutDT = inputDT.addSecs(timeoutTimeSec);
 }

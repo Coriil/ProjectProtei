@@ -62,7 +62,7 @@ public slots:
     int recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     int recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
     int recCallOverload(QDateTime inCall, long ID, long phNumber);//вызов не принят(перегрузка)
-    void recTimeoutedCalls(long ID);//превышено время ожидания - данные
+    int recTimeoutedCalls(long ID);//превышено время ожидания - данные
     int recCallDuplication(QDateTime inCall, long ID, long phNumber);//дублирование вызова
 };
 

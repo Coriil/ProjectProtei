@@ -174,13 +174,13 @@ int CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
 }
 
 
-void CDRWorker::recTimeoutedCalls(long ID)
+int CDRWorker::recTimeoutedCalls(long ID)
 {
     m_mtxCDR.lock();
     size_t ind = getRecordIndex(ID);
     journal[ind].status = TIMEOUT;
     m_mtxCDR.unlock();
-    writeToFile(ID);
+    return writeToFile(ID);
 }
 
 //Добавляет во внутренний журнал запись о дублировании вызова (вызов с таким номером уже есть в очереди)

@@ -32,19 +32,30 @@ protected:
 };
 
 TEST_F(ServerWorkerTest, ServerWorkerOverload) {
-    srvWrk->checkQueue(1234567890, 1);
-    srvWrk->checkQueue(7894561230, 2);
-    WorkerStatus answ = srvWrk->checkQueue(4561237890, 3);
+    Caller caller1(1234567890, 1);
+    Caller caller2(7894561230, 2);
+    Caller caller3(4561237890, 3);
+    caller1.setTimeoutDTSecs(5);
+    caller2.setTimeoutDTSecs(5);
+    caller3.setTimeoutDTSecs(5);
+    srvWrk->checkQueue(caller1);
+    srvWrk->checkQueue(caller2);
+    WorkerStatus answ = srvWrk->checkQueue(caller3);
     ASSERT_EQ(WorkerStatus::OVERLOAD, answ);
 }
 
 TEST_F(ServerWorkerTest, ServerWorkerCallOk) {
-    WorkerStatus answ = srvWrk->checkQueue(1234567890, 1);
+    Caller caller(1234567890, 1);
+    caller.setTimeoutDTSecs(5);
+    WorkerStatus answ = srvWrk->checkQueue(caller);
     ASSERT_EQ(WorkerStatus::OK, answ);
 }
 
 TEST_F(ServerWorkerTest, ServerWorkerDuplication) {
-    srvWrk->checkQueue(1234567890, 1);
-    WorkerStatus answ = srvWrk->checkQueue(1234567890, 1);
+    Caller caller(1234567890, 1);
+    caller.setTimeoutDTSecs(5);
+    srvWrk->checkQueue(caller);
+    WorkerStatus answ = srvWrk->checkQueue(caller);
     ASSERT_EQ(WorkerStatus::DUPLICATE, answ);
 }
+

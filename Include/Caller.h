@@ -16,7 +16,7 @@ public:
     long callerID;
 
     Caller(long callerNum, long ID);;
-    void setTimeoutDT(qint64 timeoutTimeSec);
+    void setTimeoutDTSecs(qint64 timeoutTimeSec);
 
     QDateTime getTimeoutDT() {return timeoutDT;}
 };

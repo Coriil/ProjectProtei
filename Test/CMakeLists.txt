@@ -60,6 +60,7 @@ set(SOURCES
      ${PARENT_DIR}/Sources/Callprocessing.cpp
      ${PARENT_DIR}/Sources/Server.cpp
      ${PARENT_DIR}/Sources/CDRWorker.cpp
+     ${PARENT_DIR}/Sources/Caller.cpp
 )
 
 set(HEADERS
@@ -68,6 +69,7 @@ set(HEADERS
     ${PARENT_DIR}/Include/Callprocessing.h
     ${PARENT_DIR}/Include/Server.h
     ${PARENT_DIR}/Include/CDRWorker.h
+    ${PARENT_DIR}/Include/Caller.h
 )
 
 add_executable(cfg
