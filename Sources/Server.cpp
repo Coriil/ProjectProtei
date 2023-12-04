@@ -18,7 +18,7 @@ Server::Server(ConfigJson cfg)
      connect(this, &Server::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
      connect(serverWorker, &ServerWorker::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
      connect(serverWorker, &ServerWorker::finAnswerCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
-     //connect(serverWorker, &ServerWorker::timeoutedCalls, cdrWorker, &CDRWorker::recTimeoutedCalls);
+     connect(serverWorker, &ServerWorker::timeoutedCall, cdrWorker, &CDRWorker::recTimeoutedCalls);
      connect(this, &Server::callDuplication, cdrWorker, &CDRWorker::recCallDuplication);
      connect(this, &Server::overload, cdrWorker, &CDRWorker::recCallOverload);
      checkQueryThread->start();
@@ -113,7 +113,8 @@ void Server::runServer() {
                if (number>0 &&(std::to_string(number).size()==10))//проверка - номер состоит из 10 цифр
                 {
                    long id = createID(number);
-                   WorkerStatus status = serverWorker->checkQueue(number, id);
+                   Caller curentCaller(number, id);
+                   WorkerStatus status = serverWorker->checkQueue(curentCaller);
                    handleRequest(request, socket, number, id, status);
                }
                else

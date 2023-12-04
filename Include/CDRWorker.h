@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QThread>
 #include <QMutex>
+#include <Serverworker.h>
+#include <Caller.h>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -59,8 +61,8 @@ public slots:
     void recInCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     int recAnswerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     int recFinishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
-    int recCallOverload(QDateTime inCall,long ID, long phNumber);//вызов не принят(перегрузка)
-    void recTimeoutedCalls(long timeoutedNumber);//превышено время ожидания - данные
+    int recCallOverload(QDateTime inCall, long ID, long phNumber);//вызов не принят(перегрузка)
+    void recTimeoutedCalls(long ID);//превышено время ожидания - данные
     int recCallDuplication(QDateTime inCall, long ID, long phNumber);//дублирование вызова
 };
 

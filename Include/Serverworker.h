@@ -8,8 +8,9 @@
 #include <Callprocessing.h>
 #include <Configjson.h>
 #include <CDRWorker.h>
+#include <Caller.h>
 
-//класс, обслуживающий очередь заявок
+
 enum class WorkerStatus {
     OK = 0,
     DEFAULT = -1,
@@ -17,14 +18,12 @@ enum class WorkerStatus {
     DUPLICATE = -3
 };
 
+
+//класс, обслуживающий очередь заявок
 class ServerWorker : public QObject
 {
     Q_OBJECT
- struct caller
- {
-    long  m_callerNumber;
-    long m_callerID;
-};
+
 private:
      QTimer* workerTimer = nullptr;
      const size_t queueMaxSize;//а нужен ли вообще конст если будет перечтение?
@@ -33,7 +32,7 @@ private:
      const int busyOpTimeMax;
      int waitTimeMin;
      int waitTimeMax;
-     std::vector<caller> callsQueue;//очередь, в которую попадают поступившие вызовы
+     std::vector<Caller> callsQueue;//очередь, в которую попадают поступившие вызовы
      std::vector<CallProcessing> operators;//операторы,эмуляция обработки вызовов c помощью таймера
      QMutex m_mtx;//мьютекс для защиты общих данных (очереди вызовов) во время операций
      //1. добавления в очередь 2. удаления из очереди при передаче опреатору 3. удаления из очереди из-за таймаута
@@ -41,12 +40,12 @@ private:
 public:
     explicit ServerWorker(ConfigJson cfg);
     ~ServerWorker();
-    WorkerStatus checkQueue(long number, long id);
+    WorkerStatus checkQueue(Caller &curentCaller);
 
 signals:
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     void finAnswerCall(QDateTime finishDT, long ID);
-    void timeoutedCalls(long timeoutedNumber);
+    void timeoutedCall(long ID);
 
 public slots:
     void maintainQueue();

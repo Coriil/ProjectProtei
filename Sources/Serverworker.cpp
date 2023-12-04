@@ -36,30 +36,27 @@ void ServerWorker::startWorker()
 
 void ServerWorker::maintainQueue()//назначение опрератора и удаление вызовов из очереди
 {
-       /* m_mtx.lock();
-        if (0)//(callsQueue.empty() == false)
-        {
-        auto timeouted = std::remove_if(callsQueue.begin(),callsQueue.end(),[]( caller& c)
-        {return (!c.m_callerTimer->isActive());});
-        std::vector<caller> timeoutedCallers;
-        if (timeouted!=callsQueue.end())
-        {
-            qDebug() << "timeout";
-            timeoutedCallers.assign(timeouted,callsQueue.end());
-            for (auto &caller :timeoutedCallers)
-            emit timeoutedCalls(caller.m_callerNumber);
-            callsQueue.erase(timeouted,callsQueue.end());//удаление заявок с истекшим временем ожидания
-        }
-        }
-        m_mtx.unlock();*/
+
         m_mtx.lock();
+        //удаление заявок с истекшим временем ожидания
+
+        std::vector <Caller> waitingCalls;
+        for (size_t i = 0; i < callsQueue.size(); i++)
+        {
+            if (callsQueue[i].getTimeoutDT() < QDateTime::currentDateTime())
+                emit  timeoutedCall(callsQueue[i].callerID);
+            else
+                waitingCalls.push_back(callsQueue[i]);
+        }
+        callsQueue = waitingCalls;
+        //распределение заявки из очереди на свободного оператора
         for (size_t i = 0; i < operators.size(); i++)
         {
             if (operators[i].m_isBusy == false && callsQueue.empty() == false)
             {
                 qDebug() <<"Operators assign";
-                long number = callsQueue.front().m_callerNumber;
-                long ID = callsQueue.front().m_callerID;
+                long number = callsQueue.front().callerNumber;
+                long ID = callsQueue.front().callerID;
                 operators[i].m_isBusy = true;
                 operators[i].computeData(number,ID);//назначение операторов
                 QDateTime curDT = QDateTime::currentDateTime();
@@ -74,7 +71,7 @@ void ServerWorker::maintainQueue()//назначение опрератора и
 
 
 //проверяет очередь, проверяет случаи перегрузки и дублирования вызовов, добавляет вызов в очередь
-WorkerStatus ServerWorker::checkQueue(long number, long ID)//
+WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
 {
     WorkerStatus status = WorkerStatus::DEFAULT;
     qDebug() <<"Check queue";
@@ -87,15 +84,15 @@ WorkerStatus ServerWorker::checkQueue(long number, long ID)//
     }
     else
     {
-        auto it = find_if(callsQueue.begin(), callsQueue.end(), [&number] ( const caller& c) {return c.m_callerNumber ==number;});
+        long number = currentCaller.callerNumber;
+        auto it = find_if(callsQueue.begin(), callsQueue.end(), [&number] ( const Caller& c) {return c.callerNumber == number;});
         if (it==callsQueue.end())
         {
             srand(time(NULL));
-            int randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
-            caller newCaller;
-            newCaller.m_callerNumber = number;
-            newCaller.m_callerID = ID;
-            callsQueue.push_back(newCaller);
+            qint64 randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
+            currentCaller.setTimeoutDT(randTime);
+            callsQueue.push_back(currentCaller);
+
             //callsQueue.back().m_callerNumber = number;
             //callsQueue.back().m_callerTimer->start(randTime*1000);
             status=WorkerStatus::OK;//номер добавляется в очередь

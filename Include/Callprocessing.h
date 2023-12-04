@@ -5,8 +5,6 @@
 #include <QDebug>
 #include <QObject>
 #include <QThread>
-#include <Configjson.h>
-#include <CDRWorker.h>
 
 class CallProcessing : public QObject
 {
@@ -30,6 +28,7 @@ public:
 signals:
     void computeData(long number, long ID);
     void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
+    void timeoutCall(long ID);
 
 private slots:
     void assignOp(long number, long ID);

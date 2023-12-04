@@ -22,7 +22,9 @@ set(SOURCES
     Sources/Callprocessing.cpp
     Sources/Server.cpp
     Sources/CDRWorker.cpp
+    Sources/Caller.cpp
     Sources/main.cpp
+
 )
 
 set(HEADERS
@@ -31,6 +33,7 @@ set(HEADERS
     Include/Callprocessing.h
     Include/Server.h
     Include/CDRWorker.h
+    Include/Caller.h
 )
 
 add_executable(Json_Timer_Server ${SOURCES} ${HEADERS})
