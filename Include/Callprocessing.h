@@ -4,26 +4,25 @@
 #include <QTime>
 #include <QDebug>
 #include <QObject>
-#include <QThread>
 
 class CallProcessing : public QObject
 {
     Q_OBJECT
 private:
-    QTimer* m_timer;
-    int m_timerNumber = 0;
-    int m_BusyOpTimeMin;
-    int m_BusyOpTimeMax;
+    QTimer* timerOperator;
+    int operatorNumber = 0;
+    int busyOpTimeMinSec;
+    int busyOpTimeMaxSec;
     long m_processedNumber;
     long m_processedID;
 
 public:
-    bool m_isBusy;
     CallProcessing();
     ~CallProcessing();
-    void setNumber(int i){m_timerNumber=i;};
-    void setBusyOpTimeMin(int a){m_BusyOpTimeMin=a;};
-    void setBusyOpTimeMax(int b){m_BusyOpTimeMax=b;};
+    bool m_isBusy;
+    void setNumber(int i){operatorNumber=i;};
+    void setBusyOpTimeMin(int a){busyOpTimeMinSec=a;};
+    void setBusyOpTimeMax(int b){busyOpTimeMaxSec=b;};
 
 signals:
     void computeData(long number, long ID);

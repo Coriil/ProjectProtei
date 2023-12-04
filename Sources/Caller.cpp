@@ -1,7 +1,5 @@
 #include "Caller.h"
 
-
-
 Caller::Caller(long callerNum, long ID)
 {
     callerNumber = callerNum;

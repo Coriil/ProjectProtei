@@ -31,7 +31,6 @@ public:
     bool isRunning = false;
 
 signals:
-    void assignOp();//Вообще используется
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
     void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
@@ -40,8 +39,6 @@ signals:
 
 public slots:
     void runServer();
-
-
 
 };
 

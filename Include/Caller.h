@@ -6,18 +6,16 @@
 //заявка - номер телефона и идентификатор опреатора
 class Caller
 {
-
 private:
-    QDateTime inputDT;
-    QDateTime timeoutDT;
+    QDateTime inputDT; //время поступления заявки
+    QDateTime timeoutDT; // время окончания ожидания заявки (timeout)
 
 public:
-    long  callerNumber;
+    Caller(long callerNum, long ID);
+    long callerNumber;
     long callerID;
 
-    Caller(long callerNum, long ID);;
     int setTimeoutDTSecs(qint64 timeoutTimeSec);
-
     QDateTime getTimeoutDT() {return timeoutDT;}
 };
 

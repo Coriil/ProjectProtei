@@ -60,29 +60,29 @@ int ConfigJson::validateJson(QJsonObject &jsonObject)
         return -1;
 
     if (checkValue(jsonObject, "minimal time") == 0)
-        cfgData.timeRmin= jsonObject.value("minimal time").toInt(-1);
+        cfgData.timeRminSec= jsonObject.value("minimal time").toInt(-1);
     else
         return -1;
 
     if (checkValue(jsonObject, "maxmum time") == 0)
-        cfgData.timeRmax = jsonObject.value("maxmum time").toInt(-1);
+        cfgData.timeRmaxSec = jsonObject.value("maxmum time").toInt(-1);
     else
         return -1;
-    if (cfgData.timeRmin>cfgData.timeRmax)//неправильные пределы времени - минимальное больше максимального
+    if (cfgData.timeRminSec>cfgData.timeRmaxSec)//неправильные пределы времени - минимальное больше максимального
     {
         return -2;
     }
     if (checkValue(jsonObject, "busyness min time") == 0)
-        cfgData.timeOpMin = jsonObject.value("busyness min time").toInt(-1);
+        cfgData.timeOpMinSec = jsonObject.value("busyness min time").toInt(-1);
     else
         return -1;
 
     if (checkValue(jsonObject, "busyness max time") == 0)
-        cfgData.timeOpMax = jsonObject.value("busyness max time").toInt(-1);
+        cfgData.timeOpMaxSec = jsonObject.value("busyness max time").toInt(-1);
     else
         return -1;
 
-    if (cfgData.timeOpMin>cfgData.timeOpMax)//неправильные пределы времени - минимальное больше максимального
+    if (cfgData.timeOpMinSec>cfgData.timeOpMaxSec)//неправильные пределы времени - минимальное больше максимального
     {
         return -2;
     }
@@ -111,8 +111,8 @@ void ConfigJson::setDefaultValues()
 {
     cfgData.queueSize = 10; //размер очереди
     cfgData.opNumber = 5; //число операторов
-    cfgData.timeRmin = 100; //минимальное
-    cfgData.timeRmax = 1000; // и максимальное время ожидания (секунды)
-    cfgData.timeOpMin = 10; // минимальное
-    cfgData.timeOpMax = 30;// и максимальное время занятости оператора (секунды)
+    cfgData.timeRminSec = 100; //минимальное
+    cfgData.timeRmaxSec = 1000; // и максимальное время ожидания (секунды)
+    cfgData.timeOpMinSec = 10; // минимальное
+    cfgData.timeOpMaxSec = 30;// и максимальное время занятости оператора (секунды)
 }

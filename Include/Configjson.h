@@ -12,25 +12,26 @@ private:
     {
         int queueSize; //размер очереди
         int opNumber; //число операторов
-        int timeRmin; //минимальное
-        int timeRmax; // и максимальное время ожидания в очереди (секунды)
-        int timeOpMin; // минимальное
-        int timeOpMax;//и максимальное время занятости оператора (секунды)
+        int timeRminSec; //минимальное
+        int timeRmaxSec; // и максимальное время ожидания в очереди (секунды)
+        int timeOpMinSec; // минимальное
+        int timeOpMaxSec;//и максимальное время занятости оператора (секунды)
     };
     ConfData cfgData;
     void setDefaultValues();
     int checkValue(QJsonObject &jsonObject, QString valName);
     int validateJson(QJsonObject &jsonObject);
+
 public:
     ConfigJson();
     ConfigJson(QString filePath);
     ConfData getCfg(){return cfgData;};
     int getQueueSize(){return cfgData.queueSize;}
     int getOpNumber(){return cfgData.opNumber;}
-    int getWaitTimeMin(){return cfgData.timeRmin;}
-    int getWaitTimeMax(){return cfgData.timeRmax;}
-    int getOpTimeMin(){return cfgData.timeOpMin;}
-    int getOpTimeMax(){return cfgData.timeOpMax;}
+    int getWaitTimeMin(){return cfgData.timeRminSec;}
+    int getWaitTimeMax(){return cfgData.timeRmaxSec;}
+    int getOpTimeMin(){return cfgData.timeOpMinSec;}
+    int getOpTimeMax(){return cfgData.timeOpMaxSec;}
     int readConfigJSON(QString filePath);
     int readConfigJSON(QJsonObject &obj);
 };

@@ -47,11 +47,11 @@ void CDRWorker::startCDR()
 //добавляет запись в файл CDR
 int CDRWorker::writeToFile(long ID)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     int ind = getRecordIndex(ID);
     if (ind < 0)
     {
-        m_mtxCDR.unlock();
+        mtxCDR.unlock();
         return -1;
     }
     record currentRec = journal[ind];
@@ -107,36 +107,36 @@ int CDRWorker::writeToFile(long ID)
             "; operator №:" + opNum +
             "; duration:" + callDuration;
     BOOST_LOG_TRIVIAL(info) << newRecord;
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
     return 0;
 }
 
 //добавляет во внутренний журнал запись о входящем вызове
 void CDRWorker::recInCall(QDateTime inCall, long ID, long phNumber)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     record newRecord;
     newRecord.startCallDT = inCall;
     newRecord.callID = ID;
     newRecord.phoneNumber = phNumber;
     newRecord.status = NOT_FINISHED;
     journal.push_back(newRecord);
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
 }
 
 //Добавляет во внутренний журнал запись об ответе оператора на вызов
 int CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long ID)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     int ind = getRecordIndex(ID);
     if (ind < 0)
     {
-        m_mtxCDR.unlock();
+        mtxCDR.unlock();
         return -1;
     }
     journal[ind].answDT = ansDT;
     journal[ind].operNum = opNum;
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
     return 0;
 }
 
@@ -144,17 +144,17 @@ int CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long ID)
 //и отправляет запись на вывод в CDR
 int CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     int ind = getRecordIndex(ID);
     if (ind < 0)
     {
-        m_mtxCDR.unlock();
+        mtxCDR.unlock();
         return -1;
     }
     journal[ind].finCallDT = finishDT;
     journal[ind].callDuration = journal[ind].answDT.secsTo(journal[ind].finCallDT);
     journal[ind].status = CALL_OK;
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
     return writeToFile(ID);;
 }
 
@@ -162,24 +162,25 @@ int CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
 //и отправляет запись на вывод в CDR
 int CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     record newRecord;
     newRecord.startCallDT = inCall;
     newRecord.callID = ID;
     newRecord.phoneNumber = phNumber;
     newRecord.status = OVERLOAD;
     journal.push_back(newRecord);
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
     return writeToFile(ID);
 }
 
-
+//Добавляет во внутренний журнал запись об окончании времени ожидания заявки
+//и отправляет запись на вывод в CDR
 int CDRWorker::recTimeoutedCalls(long ID)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     size_t ind = getRecordIndex(ID);
     journal[ind].status = TIMEOUT;
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
     return writeToFile(ID);
 }
 
@@ -187,14 +188,14 @@ int CDRWorker::recTimeoutedCalls(long ID)
 //и отправляет запись на вывод в CDR
 int CDRWorker::recCallDuplication(QDateTime inCall, long ID, long phNumber)
 {
-    m_mtxCDR.lock();
+    mtxCDR.lock();
     record newRecord;
     newRecord.startCallDT = inCall;
     newRecord.callID = ID;
     newRecord.phoneNumber = phNumber;
     newRecord.status = CALL_DUPLICATION;
     journal.push_back(newRecord);
-    m_mtxCDR.unlock();
+    mtxCDR.unlock();
     return writeToFile(ID);
 }
 

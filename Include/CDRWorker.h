@@ -45,12 +45,11 @@ private:
     };
     std::vector<record> journal;
     std::string callStatusToString(callStatus code);
-    QMutex m_mtxCDR;
+    QMutex mtxCDR;
     int getRecordIndex(long ID);
     int writeToFile(long ID);
 
 public:
-
     CDRWorker();
 
 signals:

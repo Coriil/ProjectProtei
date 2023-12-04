@@ -1,8 +1,8 @@
 #include <Serverworker.h>
 
 ServerWorker::ServerWorker(ConfigJson cfg) : queueMaxSize(cfg.getQueueSize()), opNumber(cfg.getOpNumber()),
-    busyOpTimeMin(cfg.getOpTimeMin()), busyOpTimeMax(cfg.getOpTimeMax()),
-    waitTimeMin(cfg.getWaitTimeMin()),waitTimeMax(cfg.getWaitTimeMax())
+    busyOpTimeMinSec(cfg.getOpTimeMin()), busyOpTimeMaxSec(cfg.getOpTimeMax()),
+    waitTimeMinSec(cfg.getWaitTimeMin()),waitTimeMaxSec(cfg.getWaitTimeMax())
 {
 
 
@@ -21,8 +21,8 @@ void ServerWorker::startWorker()
     for (size_t i = 0; i < operators.size(); ++i)
     {
         operators[i].setNumber(i);
-        operators[i].setBusyOpTimeMin(busyOpTimeMin);
-        operators[i].setBusyOpTimeMax(busyOpTimeMax);
+        operators[i].setBusyOpTimeMin(busyOpTimeMinSec);
+        operators[i].setBusyOpTimeMax(busyOpTimeMaxSec);
         connect(&operators[i], &CallProcessing::finishAnsweredCall, this,&ServerWorker::finAnswerCall);
     }
     workerTimer = new QTimer();
@@ -37,7 +37,7 @@ void ServerWorker::startWorker()
 void ServerWorker::maintainQueue()//назначение опрератора и удаление вызовов из очереди
 {
 
-        m_mtx.lock();
+        mtx.lock();
         //удаление заявок с истекшим временем ожидания
 
         std::vector <Caller> waitingCalls;
@@ -66,7 +66,7 @@ void ServerWorker::maintainQueue()//назначение опрератора и
             }
 
         }
-        m_mtx.unlock();
+        mtx.unlock();
 }
 
 
@@ -75,7 +75,7 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
 {
     WorkerStatus status = WorkerStatus::DEFAULT;
     qDebug() <<"Check queue";
-    m_mtx.lock();
+    mtx.lock();
     if (callsQueue.size() >= queueMaxSize)
     {
         qDebug() <<"Queue is full";
@@ -89,7 +89,7 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
         if (it==callsQueue.end())
         {
             srand(time(NULL));
-            qint64 randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
+            qint64 randTime = waitTimeMinSec + (rand() % (waitTimeMaxSec-waitTimeMinSec));
             int setTimeout = currentCaller.setTimeoutDTSecs(randTime);
             if (setTimeout == 0)
             {
@@ -105,6 +105,6 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
         }
 
     }
-    m_mtx.unlock();
+    mtx.unlock();
     return status;
 }
