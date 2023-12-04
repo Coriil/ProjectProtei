@@ -10,7 +10,13 @@ Caller::Caller(long callerNum, long ID)
 }
 
 //функция устанавливает время ожидания в секундах
-void Caller::setTimeoutDTSecs(qint64 timeoutTimeSec)
+int Caller::setTimeoutDTSecs(qint64 timeoutTimeSec)
 {
-    timeoutDT = inputDT.addSecs(timeoutTimeSec);
+    if (!inputDT.isNull())
+    {
+        timeoutDT = inputDT.addSecs(timeoutTimeSec);
+        return 0;
+    }
+    else
+        return -1;
 }

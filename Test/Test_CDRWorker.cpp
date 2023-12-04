@@ -5,12 +5,6 @@
 using namespace testing;
 
 
-/*TEST(CDRWorkerTest, CDRjournalEmpty)
-{
-   CDRWorker cdrWrk;
-   int answ =  cdrWrk.writeToFile(789456);
-   ASSERT_NE(answ,0);
-}*/
 
 TEST(CDRWorkerTest, CDRjournalRecordOk_recCallOverload)
 {

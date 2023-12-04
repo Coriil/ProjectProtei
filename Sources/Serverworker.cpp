@@ -90,12 +90,14 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
         {
             srand(time(NULL));
             qint64 randTime = waitTimeMin + (rand() % (waitTimeMax-waitTimeMin));
-            currentCaller.setTimeoutDTSecs(randTime);
-            callsQueue.push_back(currentCaller);
-
-            //callsQueue.back().m_callerNumber = number;
-            //callsQueue.back().m_callerTimer->start(randTime*1000);
-            status=WorkerStatus::OK;//номер добавляется в очередь
+            int setTimeout = currentCaller.setTimeoutDTSecs(randTime);
+            if (setTimeout == 0)
+            {
+                callsQueue.push_back(currentCaller);
+                status=WorkerStatus::OK;//номер добавляется в очередь
+            }
+            else //не удалось установить время ожидания
+                status=WorkerStatus::DEFAULT;
         }
         else
         {
