@@ -52,13 +52,13 @@ void ServerWorker::maintainQueue()//назначение опрератора и
         //распределение заявки из очереди на свободного оператора
         for (size_t i = 0; i < operators.size(); i++)
         {
-            if (operators[i].m_isBusy == false && callsQueue.empty() == false)
+            if (operators[i].isBusy == false && callsQueue.empty() == false)
             {
                 qDebug() <<"Operators assign";
                 long number = callsQueue.front().callerNumber;
                 long ID = callsQueue.front().callerID;
-                operators[i].m_isBusy = true;
-                operators[i].computeData(number,ID);//назначение операторов
+                operators[i].isBusy = true;
+                operators[i].processCall(number,ID);//назначение операторов
                 QDateTime curDT = QDateTime::currentDateTime();
                 emit answerCall(curDT, i, ID);
                 qDebug() << "Queue size"<<callsQueue.size();
@@ -101,7 +101,7 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
         }
         else
         {
-            status=WorkerStatus::DUPLICATE;//дубликация вызова - номер уже в очереди
+            status=WorkerStatus::DUPLICATION;//дубликация вызова - номер уже в очереди
         }
 
     }

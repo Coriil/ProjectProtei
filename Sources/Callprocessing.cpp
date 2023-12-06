@@ -5,7 +5,7 @@ CallProcessing::CallProcessing()
     timerOperator = new QTimer(this);
     timerOperator->setSingleShot(true);
     connect(timerOperator, &QTimer::timeout, this, &CallProcessing::releaseOp);//
-    connect(this, &CallProcessing::computeData, this, &CallProcessing::assignOp);
+    connect(this, &CallProcessing::processCall, this, &CallProcessing::assignOp);
 }
 
 CallProcessing::~CallProcessing()
@@ -16,8 +16,8 @@ CallProcessing::~CallProcessing()
 //эмуляция занятости оператора
 void CallProcessing::assignOp(long number, long ID)
 {
-    m_processedNumber = number;
-    m_processedID = ID;
+    processedNumber = number;
+    processedID = ID;
     srand(time(NULL));
     int randTime = busyOpTimeMinSec + (rand() % (busyOpTimeMaxSec-busyOpTimeMinSec));//случайное время занятости оператора, диапазон настраивается в конфигурации
     timerOperator->setInterval(randTime*1000);
@@ -29,8 +29,8 @@ void CallProcessing::assignOp(long number, long ID)
 void CallProcessing::releaseOp()
 {
     qDebug()<<"Operator N"<<operatorNumber<<"finished";
-    m_isBusy= false;//оператор освобождается
+    isBusy= false;//оператор освобождается
     QDateTime curDT = QDateTime::currentDateTime();
-    emit finishAnsweredCall(curDT, m_processedID);
+    emit finishAnsweredCall(curDT, processedID);
 }
 

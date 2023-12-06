@@ -2,7 +2,6 @@
 #define SERVER_H
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
-#include <QTime>
 #include <Callprocessing.h>
 #include <Configjson.h>
 #include <Serverworker.h>
@@ -32,8 +31,6 @@ public:
 
 signals:
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
-    void answerCall(QDateTime ansDT, int opNum, long ID);//ответ оператора на вызов
-    void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
     void overload(QDateTime ansDT,long ID,int opNum);
     void callDuplication(QDateTime ansDT,long ID,int opNum);
 

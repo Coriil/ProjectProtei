@@ -15,10 +15,10 @@ Server::Server(ConfigJson cfg)
      cdrWorker -> moveToThread(cdrThread);
      connect(cdrThread, &QThread::started, cdrWorker, &CDRWorker::startCDR);
      connect(this, &Server::inCall, cdrWorker, &CDRWorker::recInCall);
-     connect(this, &Server::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
+     //connect(this, &Server::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
      connect(serverWorker, &ServerWorker::answerCall, cdrWorker, &CDRWorker::recAnswerCall);
      connect(serverWorker, &ServerWorker::finAnswerCall, cdrWorker, &CDRWorker::recFinishAnsweredCall);
-     connect(serverWorker, &ServerWorker::timeoutedCall, cdrWorker, &CDRWorker::recTimeoutedCalls);
+     connect(serverWorker, &ServerWorker::timeoutedCall, cdrWorker, &CDRWorker::recTimeoutedCall);
      connect(this, &Server::callDuplication, cdrWorker, &CDRWorker::recCallDuplication);
      connect(this, &Server::overload, cdrWorker, &CDRWorker::recCallOverload);
      checkQueryThread->start();
@@ -75,9 +75,9 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
         emit overload(curDT,id, num);
     }
     break;
-    case WorkerStatus::DUPLICATE://дублирование вызова
+    case WorkerStatus::DUPLICATION://дублирование вызова
     {
-        response.body() = "error: call duplication - already in queue ";
+        response.body() = "error: call duplication - already in queue";
         response.prepare_payload();
         http::write(socket, response);
         QDateTime curDT = QDateTime::currentDateTime();

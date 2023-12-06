@@ -12,8 +12,8 @@ private:
 
 public:
     Caller(long callerNum, long ID);
-    long callerNumber;
-    long callerID;
+    long callerNumber;//номер телефона заявки
+    long callerID;//идентификатор телефона заявки
 
     int setTimeoutDTSecs(qint64 timeoutTimeSec);
     QDateTime getTimeoutDT() {return timeoutDT;}

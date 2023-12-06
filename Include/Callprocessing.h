@@ -5,29 +5,29 @@
 #include <QDebug>
 #include <QObject>
 
+//класс для эмуляции обработки вызова оператором
 class CallProcessing : public QObject
 {
     Q_OBJECT
 private:
-    QTimer* timerOperator;
-    int operatorNumber = 0;
-    int busyOpTimeMinSec;
-    int busyOpTimeMaxSec;
-    long m_processedNumber;
-    long m_processedID;
+    QTimer* timerOperator; //таймер для эмуляции занятости оператора
+    int operatorNumber = 0; //номер оператора (начиная с 0)
+    int busyOpTimeMinSec;//нижний предел времени занятости опреатора
+    int busyOpTimeMaxSec;//верхний предел времени занятости опреатора
+    long processedNumber;//номер телефона, который обслуживает оператор
+    long processedID;//идентификатор телефона, который обслуживает оператор
 
 public:
     CallProcessing();
     ~CallProcessing();
-    bool m_isBusy;
+    bool isBusy;//статус оператора (занят/свободен)
     void setNumber(int i){operatorNumber=i;};
     void setBusyOpTimeMin(int a){busyOpTimeMinSec=a;};
     void setBusyOpTimeMax(int b){busyOpTimeMaxSec=b;};
 
 signals:
-    void computeData(long number, long ID);
+    void processCall(long number, long ID);
     void finishAnsweredCall(QDateTime finishDT, long ID);//окончание ответа опреатора
-    void timeoutCall(long ID);
 
 private slots:
     void assignOp(long number, long ID);

@@ -81,7 +81,7 @@ int CDRWorker::writeToFile(long ID)
             answerDT = (currentRec.answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
             break;
         case TIMEOUT:
-            finishDT = " ";
+            finishDT = (currentRec.finCallDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();;
             answerDT = " ";
             break;
         case OVERLOAD:
@@ -94,7 +94,7 @@ int CDRWorker::writeToFile(long ID)
             break;
         default:
             finishDT = " ";
-            answerDT = (currentRec.answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
+            answerDT = " ";
             break;
     }
     string status = callStatusToString(currentRec.status);
@@ -175,11 +175,17 @@ int CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
 
 //Добавляет во внутренний журнал запись об окончании времени ожидания заявки
 //и отправляет запись на вывод в CDR
-int CDRWorker::recTimeoutedCalls(long ID)
+int CDRWorker::recTimeoutedCall(long ID)
 {
     mtxCDR.lock();
     size_t ind = getRecordIndex(ID);
+    if (ind < 0)
+    {
+        mtxCDR.unlock();
+        return -1;
+    }
     journal[ind].status = TIMEOUT;
+    journal[ind].finCallDT = QDateTime::currentDateTime();
     mtxCDR.unlock();
     return writeToFile(ID);
 }
