@@ -34,7 +34,7 @@ set(HEADERS
     Include/Server.h
     Include/CDRWorker.h
     Include/Caller.h
-    Include/mylogger.h
+    Include/Mylogger.h
 )
 
 add_executable(CallCenter_Server ${SOURCES} ${HEADERS})

@@ -110,18 +110,17 @@ int CDRWorker::writeRecord(long ID)
 }
 
 //запись в файл данных о вызове
-int CDRWorker::writeToFile(std::string record)
-{
+int CDRWorker::writeToFile(std::string record) {
     QFile file("CDR.txt");
-        if (file.open(QIODevice::ReadWrite)) {
-            QTextStream stream(&file);
-            stream << QString::fromStdString(record) << Qt::endl;
-            return 0;
-        } else
-        {
+    if (file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << QString::fromStdString(record) << "\n";
+        file.close();
+        return 0;
+    } else {
         BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "file open error";
-        return -1;
-        }
+    }
+    return -1;
 }
 
 //добавляет во внутренний журнал запись о входящем вызове

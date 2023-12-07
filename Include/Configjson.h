@@ -3,11 +3,22 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
-#include<mylogger.h>
+#include<Mylogger.h>
+
+
+enum jsonErrors
+{
+    OPEN_FILE_ERR = -1,
+    PARSE_ERROR = -2,
+    KEY_ERROR = -3,
+    VALUE_ERROR =-4,
+    OK = 0
+};
 //класс для чтения json-файла конфигурации сервера и проверки корректности полей этого файла
 class ConfigJson
 {
 private:
+
     struct ConfData
     {
         int queueSize; //размер очереди
@@ -19,8 +30,8 @@ private:
     };
     ConfData cfgData;
     void setDefaultValues();
-    int checkValue(QJsonObject &jsonObject, QString valName);
-    int validateJson(QJsonObject &jsonObject);
+    jsonErrors checkValue(QJsonObject &jsonObject, QString valName);
+    jsonErrors validateJson(QJsonObject &jsonObject);
 
 public:
     ConfigJson();
@@ -32,8 +43,10 @@ public:
     int getWaitTimeMax(){return cfgData.timeRmaxSec;}
     int getOpTimeMin(){return cfgData.timeOpMinSec;}
     int getOpTimeMax(){return cfgData.timeOpMaxSec;}
-    int readConfigJSON(QString filePath);
-    int readConfigJSON(QJsonObject &obj);
+    jsonErrors readConfigJSON(QString filePath);
+    jsonErrors readConfigJSON(QJsonObject &obj);
+
+
 };
 
 #endif // CONFIGJSON_H

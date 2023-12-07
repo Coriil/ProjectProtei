@@ -3,7 +3,7 @@
 #include <Server.h>
 #include <QDebug>
 #include <QThread>
-#include <mylogger.h>
+#include <Mylogger.h>
 
 using namespace std;
 

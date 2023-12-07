@@ -8,8 +8,8 @@ using namespace testing;
 TEST(ConfigjsonTest, noCfgFile)
 {
     ConfigJson cfg;
-    int a = cfg.readConfigJSON("no file");
-    ASSERT_NE(a, 0);
+    jsonErrors a = cfg.readConfigJSON("no file");
+    ASSERT_EQ(a, OPEN_FILE_ERR);
 
 }
 
@@ -26,8 +26,8 @@ TEST(ConfigjsonTest, JsonObjectIsCorrect)
         {"operator busy max time sec", 50}
 
     };
-    int answ = cfg.readConfigJSON(jsObj);
-    ASSERT_EQ (answ, 0);
+    jsonErrors answ = cfg.readConfigJSON(jsObj);
+    ASSERT_EQ (answ, OK);
 }
 
 TEST(ConfigjsonTest, JsonValueIsNotNumber)
@@ -42,8 +42,8 @@ TEST(ConfigjsonTest, JsonValueIsNotNumber)
         {"busyness min time", 20},
         {"busyness max time", 50}
     };
-    int answ = cfg.readConfigJSON(jsObj);
-    ASSERT_NE (answ, 0);
+    jsonErrors answ = cfg.readConfigJSON(jsObj);
+    ASSERT_EQ (answ, KEY_ERROR);
 }
 
 TEST(ConfigjsonTest, JsonMissingValue)
@@ -57,8 +57,8 @@ TEST(ConfigjsonTest, JsonMissingValue)
         {"busyness min time", 20},
         {"busyness max time", 50}
     };
-    int answ = cfg.readConfigJSON(jsObj);
-    ASSERT_NE (answ, 0);
+    jsonErrors answ = cfg.readConfigJSON(jsObj);
+    ASSERT_EQ (answ, KEY_ERROR);
 }
 
 TEST(ConfigjsonTest, JsonCheckZeroValue)
@@ -73,8 +73,8 @@ TEST(ConfigjsonTest, JsonCheckZeroValue)
         {"busyness min time", 20},
         {"busyness max time", 50}
     };
-    int answ = cfg.readConfigJSON(jsObj);
-    ASSERT_NE (answ, 0);
+    jsonErrors answ = cfg.readConfigJSON(jsObj);
+    ASSERT_EQ (answ, KEY_ERROR);
 }
 
 TEST(ConfigjsonTest, JsonCheckNegativeValue)
@@ -89,8 +89,8 @@ TEST(ConfigjsonTest, JsonCheckNegativeValue)
         {"busyness min time", 20},
         {"busyness max time", 50}
     };
-    int answ = cfg.readConfigJSON(jsObj);
-    ASSERT_NE (answ, 0);
+    jsonErrors answ = cfg.readConfigJSON(jsObj);
+    ASSERT_EQ (answ, KEY_ERROR);
 }
 
 TEST(ConfigjsonTest, JsonCheckMinMaxIncorrect)
@@ -105,6 +105,7 @@ TEST(ConfigjsonTest, JsonCheckMinMaxIncorrect)
         {"busyness min time", 50},
         {"busyness max time", 30}
     };
-    int answ = cfg.readConfigJSON(jsObj);
-    ASSERT_NE (answ, 0);
+    jsonErrors answ = cfg.readConfigJSON(jsObj);
+    ASSERT_EQ (answ, KEY_ERROR);
 }
+

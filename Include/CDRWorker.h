@@ -12,7 +12,6 @@
 #include <Caller.h>
 #include <QFile>
 #include <QTextStream>
-#include <mylogger.h>
 
 //класс для ведения call detailed record и вывода записей в файл CDR.txt
 class CDRWorker : public QObject
