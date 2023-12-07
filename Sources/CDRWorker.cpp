@@ -36,7 +36,12 @@ int CDRWorker::getRecordIndex(long ID)
 //инициализирует файл CDR для записи данных о вызовах
 void CDRWorker::startCDR()
 {
- BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "CDR journal";
+    QFile file("CDR.txt");
+       if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+           file.close();  // Закрываем файл после очистки
+       } else
+       {}
+    BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "CDR journal";
 }
 
 //добавляет запись в файл CDR
