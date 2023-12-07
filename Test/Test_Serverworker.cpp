@@ -56,6 +56,6 @@ TEST_F(ServerWorkerTest, ServerWorkerDuplication) {
     caller.setTimeoutDTSecs(5);
     srvWrk->checkQueue(caller);
     WorkerStatus answ = srvWrk->checkQueue(caller);
-    ASSERT_EQ(WorkerStatus::DUPLICATE, answ);
+    ASSERT_EQ(WorkerStatus::DUPLICATION, answ);
 }
 

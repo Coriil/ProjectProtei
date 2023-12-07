@@ -44,7 +44,12 @@ void ServerWorker::maintainQueue()//назначение опрератора и
         for (size_t i = 0; i < callsQueue.size(); i++)
         {
             if (callsQueue[i].getTimeoutDT() < QDateTime::currentDateTime())
+            {
                 emit  timeoutedCall(callsQueue[i].callerID);
+                BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Call with ID: " << std::to_string(callsQueue[i].callerID) <<
+                                                                             "has timeouted";
+
+            }
             else
                 waitingCalls.push_back(callsQueue[i]);
         }
@@ -54,15 +59,16 @@ void ServerWorker::maintainQueue()//назначение опрератора и
         {
             if (operators[i].isBusy == false && callsQueue.empty() == false)
             {
-                qDebug() <<"Operators assign";
                 long number = callsQueue.front().callerNumber;
                 long ID = callsQueue.front().callerID;
                 operators[i].isBusy = true;
                 operators[i].processCall(number,ID);//назначение операторов
                 QDateTime curDT = QDateTime::currentDateTime();
                 emit answerCall(curDT, i, ID);
-                qDebug() << "Queue size"<<callsQueue.size();
+                BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Call with ID " << std::to_string(callsQueue[i].callerID) <<
+                                                                             "sent to the operator № " << std::to_string(i);
                 callsQueue.erase(callsQueue.begin());
+                BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Queue size is " << std::to_string(callsQueue.size());
             }
 
         }
@@ -74,13 +80,10 @@ void ServerWorker::maintainQueue()//назначение опрератора и
 WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
 {
     WorkerStatus status = WorkerStatus::DEFAULT;
-    qDebug() <<"Check queue";
     mtx.lock();
     if (callsQueue.size() >= queueMaxSize)
     {
-        qDebug() <<"Queue is full";
         status = WorkerStatus::OVERLOAD;//overload - очередь заполнена
-
     }
     else
     {
@@ -95,6 +98,8 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
             {
                 callsQueue.push_back(currentCaller);
                 status=WorkerStatus::OK;//номер добавляется в очередь
+                BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Number " << std::to_string(number) <<
+                                                                             " added to queue";
             }
             else //не удалось установить время ожидания
                 status=WorkerStatus::DEFAULT;
@@ -102,6 +107,7 @@ WorkerStatus ServerWorker::checkQueue(Caller &currentCaller)//
         else
         {
             status=WorkerStatus::DUPLICATION;//дубликация вызова - номер уже в очереди
+
         }
 
     }

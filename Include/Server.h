@@ -8,7 +8,6 @@
 #include <CDRWorker.h>
 #include <Caller.h>
 
-
 namespace http = boost::beast::http;
 using tcp = boost::asio::ip::tcp;
 

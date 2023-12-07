@@ -3,7 +3,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
-
+#include<mylogger.h>
 //класс для чтения json-файла конфигурации сервера и проверки корректности полей этого файла
 class ConfigJson
 {

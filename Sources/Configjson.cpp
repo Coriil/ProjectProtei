@@ -13,6 +13,7 @@ ConfigJson::ConfigJson(QString filePath)
     {
         setDefaultValues(); //ошибка при считывании конфигурации - выставляются занчения по умолчанию
         qDebug() << "config file not found - default values set";
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning)<< "configuration default value set";
     }
 }
 
@@ -22,23 +23,22 @@ int ConfigJson::readConfigJSON(QString filePath)
 {
     QFile file(filePath);
 
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        qDebug() << "Could not open the file for reading";
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "could not open configutarion file for reading";
         return -1;
     }
 
     QByteArray jsonData = file.readAll();
     file.close();
-
     QJsonParseError parseError;
     QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
     if(parseError.error != QJsonParseError::NoError) {
-        qDebug() << "Error parsing JSON: " << parseError.errorString();
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "Error parsing JSON: "<<  parseError.errorString().toStdString();
         return -1;
     }
 
     QJsonObject jsonObject = jsonDoc.object();
-
     return validateJson(jsonObject);
 }
 
@@ -73,6 +73,7 @@ int ConfigJson::validateJson(QJsonObject &jsonObject)
     if (cfgData.timeRminSec>cfgData.timeRmaxSec)//неправильные пределы времени - минимальное больше максимального
     {
         return -2;
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "wait time limits min/max not correct";
     }
     if (checkValue(jsonObject, "operator busy min time sec") == 0)
         cfgData.timeOpMinSec = jsonObject.value("operator busy min time sec").toInt(-1);
@@ -87,6 +88,7 @@ int ConfigJson::validateJson(QJsonObject &jsonObject)
     if (cfgData.timeOpMinSec>cfgData.timeOpMaxSec)//неправильные пределы времени - минимальное больше максимального
     {
         return -2;
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "operator time limits min/max not correct";
     }
     return 0;
 }
@@ -100,9 +102,15 @@ int ConfigJson::checkValue(QJsonObject &jsonObject, QString valName)
 
     int ans = jsonObject.value(valName).toInt(-1); // проверка что значение - число
     if (ans == -1)
+    {
         return -1;
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << valName.toStdString() << " value is not an integer";
+    }
     if (ans<0) // проверка что число положительное, строго больше нуля
+    {
         return -1;
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << valName.toStdString() << " value is negative number";
+    }
     return 0;
 }
 

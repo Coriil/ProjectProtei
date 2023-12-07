@@ -22,15 +22,17 @@ void CallProcessing::assignOp(long number, long ID)
     int randTime = busyOpTimeMinSec + (rand() % (busyOpTimeMaxSec-busyOpTimeMinSec));//случайное время занятости оператора, диапазон настраивается в конфигурации
     timerOperator->setInterval(randTime*1000);
     timerOperator->start();
-    qDebug()<<"timer N"<<operatorNumber<<"started for" << randTime;
+    BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info)<< "Operator №" << std::to_string(operatorNumber) <<
+                                                                " answering, for " <<std::to_string(randTime) << " sec";
 }
 
 //освобождение опреатора после обработки заявки
 void CallProcessing::releaseOp()
 {
-    qDebug()<<"Operator N"<<operatorNumber<<"finished";
     isBusy= false;//оператор освобождается
     QDateTime curDT = QDateTime::currentDateTime();
     emit finishAnsweredCall(curDT, processedID);
+    BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info)<< "Operator №" << std::to_string(operatorNumber) <<
+                                                                " finished call";
 }
 

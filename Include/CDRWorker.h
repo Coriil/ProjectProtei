@@ -10,6 +10,7 @@
 #include <QMutex>
 #include <Serverworker.h>
 #include <Caller.h>
+#include <mylogger.h>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
@@ -17,6 +18,7 @@
 #include <boost/log/utility/setup/common_attributes.hpp>
 
 //класс для ведения call detailed record и вывода записей в файл CDR.txt
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(CDRwriter, src::logger_mt)
 class CDRWorker : public QObject
 {
     Q_OBJECT

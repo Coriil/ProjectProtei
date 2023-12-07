@@ -39,8 +39,9 @@ void CDRWorker::startCDR()
     boost::log::add_common_attributes();
     boost::log::add_file_log(// CDR
      "CDR.txt",
-    boost::log::keywords::format = "[%Message%]", boost::log::keywords::auto_flush = true);
-    BOOST_LOG_TRIVIAL(info) << "CDR started";
+    boost::log::keywords::format = "[%Message%]",
+    boost::log::keywords::auto_flush = true);
+    BOOST_LOG_SEV(CDRwriter::get(),boost::log::trivial::info) << "CDR journal started";
 
 }
 
@@ -52,6 +53,8 @@ int CDRWorker::writeToFile(long ID)
     if (ind < 0)
     {
         mtxCDR.unlock();
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "could not find record with ID:" <<
+                                                                        std::to_string(ID)<<", possible data loss";
         return -1;
     }
     record currentRec = journal[ind];
@@ -108,6 +111,7 @@ int CDRWorker::writeToFile(long ID)
             "; duration:" + callDuration;
     BOOST_LOG_TRIVIAL(info) << newRecord;
     mtxCDR.unlock();
+    BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "record added to CDR.txt";
     return 0;
 }
 
@@ -122,6 +126,8 @@ void CDRWorker::recInCall(QDateTime inCall, long ID, long phNumber)
     newRecord.status = NOT_FINISHED;
     journal.push_back(newRecord);
     mtxCDR.unlock();
+    BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "new call: " << std::to_string(phNumber) <<
+                                                                 ", ID: " << std::to_string(ID);
 }
 
 //Добавляет во внутренний журнал запись об ответе оператора на вызов
@@ -132,6 +138,8 @@ int CDRWorker::recAnswerCall(QDateTime ansDT, int opNum, long ID)
     if (ind < 0)
     {
         mtxCDR.unlock();
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "could not find record with ID:" <<
+                                                                        std::to_string(ID)<<", possible data loss";
         return -1;
     }
     journal[ind].answDT = ansDT;
@@ -149,13 +157,15 @@ int CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
     if (ind < 0)
     {
         mtxCDR.unlock();
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "could not find record with ID:" <<
+                                                                        std::to_string(ID)<<", possible data loss";
         return -1;
     }
     journal[ind].finCallDT = finishDT;
     journal[ind].callDuration = journal[ind].answDT.secsTo(journal[ind].finCallDT);
     journal[ind].status = CALL_OK;
     mtxCDR.unlock();
-    return writeToFile(ID);;
+    return writeToFile(ID);
 }
 
 //Добавляет во внутренний журнал запись о перегрузке (поступление нового вызова при полной очереди)
@@ -182,7 +192,10 @@ int CDRWorker::recTimeoutedCall(long ID)
     if (ind < 0)
     {
         mtxCDR.unlock();
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "could not find record with ID:" <<
+                                                                        std::to_string(ID)<<", possible data loss";
         return -1;
+
     }
     journal[ind].status = TIMEOUT;
     journal[ind].finCallDT = QDateTime::currentDateTime();
