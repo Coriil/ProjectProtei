@@ -55,7 +55,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     switch (status) {
     case WorkerStatus::DEFAULT://неправильный формат номера
     {
-        response.body() = "error:incorrect number";
+        response.body() = "error:incorrect number\n";
         response.prepare_payload();
         http::write(socket, response);
     }
@@ -63,7 +63,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     case WorkerStatus::OK://вызов помещается в очередь
     {
         QDateTime curDT = QDateTime::currentDateTime();
-        response.body() = std::to_string(id);//в теле ответа содержится CallID
+        response.body() = std::to_string(id)+"\n";//в теле ответа содержится CallID
         response.prepare_payload();
         http::write(socket, response);//отправка ответа клиенту
         emit inCall(curDT,id,num);
@@ -72,7 +72,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     break;
     case WorkerStatus::OVERLOAD://в случае перегрузки сервера
     {
-        response.body() = "error: server is overloaded";
+        response.body() = "error: server is overloaded\n";
         response.prepare_payload();
         http::write(socket, response);
         QDateTime curDT = QDateTime::currentDateTime();
@@ -82,7 +82,7 @@ void Server::handleRequest(http::request<http::string_body>& request, boost::asi
     break;
     case WorkerStatus::DUPLICATION://дублирование вызова
     {
-        response.body() = "error: call duplication - already in queue";
+        response.body() = "error: call duplication - already in queue\n";
         response.prepare_payload();
         http::write(socket, response);
         QDateTime curDT = QDateTime::currentDateTime();

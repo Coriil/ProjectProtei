@@ -4,7 +4,7 @@
 #include <QTime>
 #include <QDebug>
 #include <QObject>
-#include <mylogger.h>
+#include <Mylogger.h>
 
 //класс для эмуляции обработки вызова оператором
 class CallProcessing : public QObject

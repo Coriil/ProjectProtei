@@ -27,7 +27,7 @@ void ServerWorker::startWorker()
     }
     workerTimer = new QTimer();
     connect(workerTimer, &QTimer::timeout, this, &ServerWorker::maintainQueue);
-    workerTimer->start(1000);
+    workerTimer->start(200); //очередь проверяется 5 раз за секунду
 }
 
 
