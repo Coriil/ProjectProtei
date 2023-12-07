@@ -4,14 +4,15 @@
 #include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/expressions.hpp>
-#include <boost/log/sinks/text_file_backend.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/common.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/attributes.hpp>
-#include <boost/log/sources/logger.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
+#include <boost/log/keywords/format.hpp>
+#include <boost/log/keywords/auto_flush.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/utility/setup/file.hpp>
 
 namespace logging = boost::log;
 namespace expr = boost::log::expressions;
@@ -24,16 +25,14 @@ BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(my_logger, src::severity_logger_mt<loggin
 class MyLogger
 {
 public:
-    MyLogger();
+    MyLogger(){};
     void initLogging()
     {
-
         boost::log::add_common_attributes();
         boost::log::add_file_log(
          "log.txt",
         boost::log::keywords::format = "[%TimeStamp%][%Severity%]: - [%Message%]",
         boost::log::keywords::auto_flush = true);
-
     }
 
 };

@@ -1,8 +1,0 @@
-{
-    "queue size": 3,
-    "operators number": 2,
-    "minimal time": 5,
-    "maxmum time": 7,
-    "busyness min time": 20,
-    "busyness max time": 50
-}

@@ -10,15 +10,11 @@
 #include <QMutex>
 #include <Serverworker.h>
 #include <Caller.h>
+#include <QFile>
+#include <QTextStream>
 #include <mylogger.h>
-#include <boost/log/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
 
 //класс для ведения call detailed record и вывода записей в файл CDR.txt
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(CDRwriter, src::logger_mt)
 class CDRWorker : public QObject
 {
     Q_OBJECT
@@ -49,7 +45,8 @@ private:
     std::string callStatusToString(callStatus code);
     QMutex mtxCDR;//мьютекс для защиты журнала
     int getRecordIndex(long ID);
-    int writeToFile(long ID);
+    int writeRecord(long ID);
+    int writeToFile(std::string record);
 
 public:
     CDRWorker();

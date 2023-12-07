@@ -31,7 +31,7 @@ public:
 signals:
     void inCall(QDateTime inCall, long ID, long phNumber);//входящий вызов
     void overload(QDateTime ansDT,long ID,int opNum);
-    void callDuplication(QDateTime ansDT,long ID,int opNum);
+    void callDuplication(QDateTime ansDT,long ID, long opNum);
 
 public slots:
     void runServer();

@@ -18,7 +18,7 @@ ServerWorker::~ServerWorker()
 void ServerWorker::startWorker()
 {
     operators = std::vector<CallProcessing>(opNumber);
-    for (size_t i = 0; i < operators.size(); ++i)
+    for (size_t i = 0; i < operators.size(); ++i)//инициализация операторов, которые будут обрабатывать вызовы
     {
         operators[i].setNumber(i);
         operators[i].setBusyOpTimeMin(busyOpTimeMinSec);
@@ -65,8 +65,8 @@ void ServerWorker::maintainQueue()//назначение опрератора и
                 operators[i].processCall(number,ID);//назначение операторов
                 QDateTime curDT = QDateTime::currentDateTime();
                 emit answerCall(curDT, i, ID);
-                BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Call with ID " << std::to_string(callsQueue[i].callerID) <<
-                                                                             "sent to the operator № " << std::to_string(i);
+                BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Call with ID " << std::to_string(ID) <<
+                                                                             " sent to the operator № " << std::to_string(i);
                 callsQueue.erase(callsQueue.begin());
                 BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "Queue size is " << std::to_string(callsQueue.size());
             }

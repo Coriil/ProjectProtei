@@ -20,10 +20,11 @@ TEST(ConfigjsonTest, JsonObjectIsCorrect)
     {
         {"queue size", 3},
         {"operators number", 2},
-        {"minimal time", 5},
-        {"maxmum time", 7},
-        {"busyness min time", 20},
-        {"busyness max time", 50}
+        { "wait min time sec", 5},
+        {"wait max time sec", 7},
+        {"operator busy min time sec", 20},
+        {"operator busy max time sec", 50}
+
     };
     int answ = cfg.readConfigJSON(jsObj);
     ASSERT_EQ (answ, 0);

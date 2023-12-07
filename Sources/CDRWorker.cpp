@@ -12,8 +12,8 @@ string CDRWorker::callStatusToString(callStatus code)
 {
     switch (code)
     {
-        case callStatus::CALL_OK: return "Ok       ";
-        case callStatus::TIMEOUT: return "Timeout  ";
+        case callStatus::CALL_OK: return "Call answered (ok) ";
+        case callStatus::TIMEOUT: return "Timeout ";
         case callStatus::OVERLOAD: return "Overload";
         case callStatus::CALL_DUPLICATION: return "Call duplication";
         case callStatus::NOT_FINISHED: return "Not defined";
@@ -36,17 +36,11 @@ int CDRWorker::getRecordIndex(long ID)
 //инициализирует файл CDR для записи данных о вызовах
 void CDRWorker::startCDR()
 {
-    boost::log::add_common_attributes();
-    boost::log::add_file_log(// CDR
-     "CDR.txt",
-    boost::log::keywords::format = "[%Message%]",
-    boost::log::keywords::auto_flush = true);
-    BOOST_LOG_SEV(CDRwriter::get(),boost::log::trivial::info) << "CDR journal started";
-
+ BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "CDR journal";
 }
 
 //добавляет запись в файл CDR
-int CDRWorker::writeToFile(long ID)
+int CDRWorker::writeRecord(long ID)
 {
     mtxCDR.lock();
     int ind = getRecordIndex(ID);
@@ -76,7 +70,7 @@ int CDRWorker::writeToFile(long ID)
         opNum = "None";
     else
         opNum =  to_string(currentRec.operNum);
-
+    //запись о вызове в зависимости от его статуса
     switch (currentRec.status)
     {
         case CALL_OK:
@@ -84,7 +78,7 @@ int CDRWorker::writeToFile(long ID)
             answerDT = (currentRec.answDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
             break;
         case TIMEOUT:
-            finishDT = (currentRec.finCallDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();;
+            finishDT = (currentRec.finCallDT.toString("dd.MM.yyyy hh:mm:ss")).toStdString();
             answerDT = " ";
             break;
         case OVERLOAD:
@@ -109,10 +103,25 @@ int CDRWorker::writeToFile(long ID)
             "; status:" + status +
             "; operator №:" + opNum +
             "; duration:" + callDuration;
-    BOOST_LOG_TRIVIAL(info) << newRecord;
+    writeToFile(newRecord);
     mtxCDR.unlock();
     BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::info) << "record added to CDR.txt";
     return 0;
+}
+
+//запись в файл данных о вызове
+int CDRWorker::writeToFile(std::string record)
+{
+    QFile file("CDR.txt");
+        if (file.open(QIODevice::ReadWrite)) {
+            QTextStream stream(&file);
+            stream << QString::fromStdString(record) << Qt::endl;
+            return 0;
+        } else
+        {
+        BOOST_LOG_SEV(my_logger::get(),boost::log::trivial::warning) << "file open error";
+        return -1;
+        }
 }
 
 //добавляет во внутренний журнал запись о входящем вызове
@@ -165,7 +174,7 @@ int CDRWorker::recFinishAnsweredCall(QDateTime finishDT, long ID)
     journal[ind].callDuration = journal[ind].answDT.secsTo(journal[ind].finCallDT);
     journal[ind].status = CALL_OK;
     mtxCDR.unlock();
-    return writeToFile(ID);
+    return writeRecord(ID);
 }
 
 //Добавляет во внутренний журнал запись о перегрузке (поступление нового вызова при полной очереди)
@@ -180,7 +189,7 @@ int CDRWorker::recCallOverload(QDateTime inCall,long ID, long phNumber)
     newRecord.status = OVERLOAD;
     journal.push_back(newRecord);
     mtxCDR.unlock();
-    return writeToFile(ID);
+    return writeRecord(ID);
 }
 
 //Добавляет во внутренний журнал запись об окончании времени ожидания заявки
@@ -200,7 +209,7 @@ int CDRWorker::recTimeoutedCall(long ID)
     journal[ind].status = TIMEOUT;
     journal[ind].finCallDT = QDateTime::currentDateTime();
     mtxCDR.unlock();
-    return writeToFile(ID);
+    return writeRecord(ID);
 }
 
 //Добавляет во внутренний журнал запись о дублировании вызова (вызов с таким номером уже есть в очереди)
@@ -215,7 +224,7 @@ int CDRWorker::recCallDuplication(QDateTime inCall, long ID, long phNumber)
     newRecord.status = CALL_DUPLICATION;
     journal.push_back(newRecord);
     mtxCDR.unlock();
-    return writeToFile(ID);
+    return writeRecord(ID);
 }
 
 

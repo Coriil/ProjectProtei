@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(Json_Timer_Server LANGUAGES CXX)
+project(CallCenter_Server LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -34,17 +34,18 @@ set(HEADERS
     Include/Server.h
     Include/CDRWorker.h
     Include/Caller.h
+    Include/mylogger.h
 )
 
-add_executable(Json_Timer_Server ${SOURCES} ${HEADERS})
+add_executable(CallCenter_Server ${SOURCES} ${HEADERS})
 
-target_link_libraries(Json_Timer_Server  Qt${QT_VERSION_MAJOR}::Core)
-target_link_libraries(Json_Timer_Server
+target_link_libraries(CallCenter_Server  Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(CallCenter_Server
     boost_log_setup
     boost_log
     boost_thread
     pthread
     boost_system
 )
-target_link_libraries(Json_Timer_Server  -lstdc++)
+target_link_libraries(CallCenter_Server  -lstdc++)
 

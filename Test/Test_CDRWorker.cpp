@@ -47,6 +47,6 @@ TEST(CDRWorkerTest, CDRjournalRecordOk_TimeoutedCall)
     CDRWorker cdrWrk;
     QDateTime curDT = QDateTime::currentDateTime();
     cdrWrk.recInCall(curDT, 1, 7894561230);
-    int answ = cdrWrk.recTimeoutedCalls(1);
+    int answ = cdrWrk.recTimeoutedCall(1);
     ASSERT_EQ(answ,0);
 }
