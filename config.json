@@ -1,0 +1,8 @@
+{
+    "queue size": 5,
+    "operators number": 10,
+    "wait min time sec": 5,
+    "wait max time sec": 7,
+    "operator busy min time sec": 10,
+    "operator busy max time sec": 15
+}
